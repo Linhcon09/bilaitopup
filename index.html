@@ -1,66 +1,145 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <title>BilaiTopUp: Free Fire Diamond Top Up Website for Bangladesh</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Styles -->
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>BilaiTopUp: Free Fire Diamond Top Up Website for Bangladesh</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="firebase-config.js"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- Styles -->
+<link rel="stylesheet" href="style.css">
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<style>
+  body {
+    margin:0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: #333;
+  }
+  .header {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:10px 20px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(12px);
+    border-bottom:1px solid rgba(255,255,255,0.2);
+    position: sticky;
+    top:0;
+    z-index:100;
+  }
+  .nav-left {
+    display:flex; align-items:center; gap:10px;
+  }
+  .nav-left .logo {
+    height:40px; width:40px;
+  }
+  .nav-left .brand { font-weight:600; font-size:20px; color:#fff;}
+  .nav-right a, .nav-right button {
+    margin-left:15px; text-decoration:none; color:#fff; font-weight:500; cursor:pointer; background:none; border:none;
+  }
+  .nav-right button.logout-btn:hover, .nav-right a:hover { text-decoration:underline; }
+
+  .container { padding:20px; max-width:1200px; margin:auto; }
+
+  h1, h2 { color:#fff; text-align:center; }
+
+  .packages-grid {
+    display:grid; 
+    grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); 
+    gap:15px; 
+    margin-top:20px;
+  }
+  .package-card {
+    background: rgba(255,255,255,0.15);
+    padding:20px; 
+    border-radius:15px;
+    text-align:center; 
+    color:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .package-card:hover {
+    transform: translateY(-5px);
+    box-shadow:0 12px 25px rgba(0,0,0,0.3);
+  }
+  .package-card h3 { margin-bottom:10px; }
+  .package-card p { margin-bottom:15px; font-size:16px; }
+  .package-card button {
+    padding:8px 15px; border:none; border-radius:25px; cursor:pointer;
+    background:#fff; color:#4e54c8; font-weight:600;
+    transition:0.2s;
+  }
+  .package-card button:hover { background:#f1f1f1; }
+
+  .payment-section { margin-top:40px; background: rgba(255,255,255,0.1); padding:20px; border-radius:15px; color:#fff; }
+  .instructions p { margin:5px 0; font-size:14px; }
+  .verify-box { margin-top:15px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+  .verify-box input { padding:10px; border-radius:25px; border:none; flex:1; min-width:180px; }
+  .verify-box button.verify-btn {
+    padding:10px 20px; border:none; border-radius:25px; background:#fff; color:#4e54c8; font-weight:600; cursor:pointer;
+    transition:0.2s;
+  }
+  .verify-box button.verify-btn:hover { background:#f1f1f1; }
+
+  footer { text-align:center; padding:10px; color:#ddd; margin-top:30px; font-size:14px; }
+</style>
 </head>
+
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="nav-left">
-      <img src="logo.png" alt="Logo" class="logo">
-      <span class="brand">BilaiTopUp</span>
+
+<header class="header">
+  <div class="nav-left">
+    <img src="logo.png" alt="Logo" class="logo">
+    <span class="brand">BilaiTopUp</span>
+  </div>
+  <nav class="nav-right">
+    <a href="account.html">আমার একাউন্ট</a>
+    <a href="faq.html">FAQ</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="https://wa.me/01963178893" target="_blank">💬 Support</a>
+    <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+  </nav>
+</header>
+
+<main class="container">
+  <!-- Packages -->
+  <section class="packages-section">
+    <h1>💎 ডায়মন্ড প্যাকেজ</h1>
+    <div id="packages" class="packages-grid"></div>
+  </section>
+
+  <!-- Payment -->
+  <section class="payment-section">
+    <h2>📲 Payment Instructions</h2>
+    <div class="instructions">
+      <p>*247# ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।</p>
+      <p>"Send Money" -এ ক্লিক করুন।</p>
+      <p>প্রাপক নম্বর: <strong id="bkashNumber">01829865733</strong></p>
+      <p>টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী টাকার পরিমাণ)</p>
+      <p>নিশ্চিত করতে আপনার পিন লিখুন।</p>
+      <p>সবকিছু ঠিক থাকলে bKash থেকে একটি কনফার্মেশন বার্তা পাবেন।</p>
+      <p>এখন নিচের বক্সে Transaction ID দিন এবং VERIFY করুন।</p>
     </div>
-    <nav class="nav-right">
-      <a href="account.html">আমার একাউন্ট</a>
-      <a href="faq.html">FAQ</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="https://wa.me/01963178893" target="_blank">💬 Support</a>
-      <button onclick="logout()" class="logout-btn">🚪 Logout</button>
-    </nav>
-  </header>
+    <div class="verify-box">
+      <input type="text" id="transactionId" placeholder="Transaction ID লিখুন">
+      <button id="verifyBtn" class="verify-btn">✅ VERIFY</button>
+    </div>
+  </section>
+</main>
 
-  <!-- Main Content -->
-  <main class="container">
-    <section class="packages-section">
-      <h1>💎 ডায়মন্ড প্যাকেজ</h1>
-      <div id="packages" class="packages-grid"></div>
-    </section>
+<footer>
+  <p>© 2025 BilaiTopUp | সর্বস্বত্ব সংরক্ষিত</p>
+</footer>
 
-    <section class="payment-section">
-      <h2>📲 Payment Instructions</h2>
-      <div class="instructions">
-        <p>*247# ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।</p>
-        <p>"Send Money" -এ ক্লিক করুন।</p>
-        <p>প্রাপক নম্বর: <strong id="bkashNumber">01829865733</strong></p>
-        <p>টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী টাকার পরিমাণ)</p>
-        <p>নিশ্চিত করতে আপনার পিন লিখুন।</p>
-        <p>সবকিছু ঠিক থাকলে bKash থেকে একটি কনফার্মেশন বার্তা পাবেন।</p>
-        <p>এখন নিচের বক্সে Transaction ID দিন এবং VERIFY করুন।</p>
-      </div>
-      <div class="verify-box">
-        <input type="text" id="transactionId" placeholder="Transaction ID লিখুন">
-        <button id="verifyBtn" class="verify-btn">✅ VERIFY</button>
-      </div>
-    </section>
-  </main>
-
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 BilaiTopUp | সর্বস্বত্ব সংরক্ষিত</p>
-  </footer>
-
-  <!-- Scripts -->
-  <script src="main.js"></script>
+<script src="main.js"></script>
 </body>
   </html>
