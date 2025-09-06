@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+</head>
+<body>
+<header>
+  <h1>🔑 Admin Dashboard</h1>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<main>
+  <!-- User Management -->
+  <section>
+    <h2>👥 Users</h2>
+    <table id="usersTable">
+      <tr><th>Email</th><th>Balance</th><th>Action</th></tr>
+    </table>
+  </section>
+
+  <!-- Orders -->
+  <section>
+    <h2>📦 Orders</h2>
+    <input type="text" id="searchOrder" placeholder="Search by Transaction ID">
+    <table id="ordersTable">
+      <tr><th>Txn ID</th><th>User</th><th>Status</th><th>Action</th></tr>
+    </table>
+  </section>
+
+  <!-- Deposits -->
+  <section>
+    <h2>💳 Deposits</h2>
+    <table id="depositsTable">
+      <tr><th>User</th><th>Amount</th><th>Status</th></tr>
+    </table>
+  </section>
+</main>
+
+<script>
+const adminEmails = [
+  "gamingtahmid08@gmail.com",
+  "kingtahmid046@gmail.com",
+  "kingtahmid1973@gmail.com",
+  "tahmideditofficial@gmail.com"
+];
+
+// Ensure only admin can access
+auth.onAuthStateChanged(async user => {
+  if (!user || !adminEmails.includes(user.email)) {
+    alert("Unauthorized! Admin only.");
+    window.location.href = "index.html";
+  } else {
+    loadUsers();
+    loadOrders();
+    loadDeposits();
+  }
+});
+
+// Logout
+function logout(){ auth.signOut(); }
+
+// Load Users
+async function loadUsers(){
+  const snapshot = await db.collection("users").get();
+  const table = document.getElementById("usersTable");
+  snapshot.forEach(doc=>{
+    const u = doc.data();
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${u.email||'Unknown'}</td>
+      <td>${u.balance||0} TK</td>
+      <td>
+        <button onclick="changeBalance('${doc.id}',10)">+10</button>
+        <button onclick="changeBalance('${doc.id}',-10)">-10</button>
+        <button onclick="customBalance('${doc.id}')">Set</button>
+      </td>`;
+    table.appendChild(tr);
+  });
+}
+
+// Update Wallet Balance
+async function changeBalance(uid, amount){
+  const ref = db.collection("users").doc(uid);
+  await db.runTransaction(async (t)=>{
+    const doc = await t.get(ref);
+    let newBal = (doc.data().balance||0) + amount;
+    t.update(ref,{balance:newBal});
+  });
+  alert("Balance updated!");
+  location.reload();
+}
+
+async function customBalance(uid){
+  const val = prompt("Enter new balance:");
+  if(val!==null){
+    await db.collection("users").doc(uid).update({balance:parseInt(val)});
+    alert("Balance set!");
+    location.reload();
+  }
+}
+
+// Load Orders
+async function loadOrders(){
+  const snapshot = await db.collection("orders").orderBy("createdAt","desc").get();
+  const table = document.getElementById("ordersTable");
+  snapshot.forEach(doc=>{
+    const o = doc.data();
+    const tr = document.createElement("tr");
+    tr.innerHTML=`
+      <td>${o.transactionId}</td>
+      <td>${o.uid}</td>
+      <td>${o.status}</td>
+      <td>
+        <button onclick="updateOrder('${doc.id}','Complete')">Approve</button>
+        <button onclick="updateOrder('${doc.id}','Rejected')">Reject</button>
+      </td>`;
+    table.appendChild(tr);
+  });
+}
+
+function updateOrder(id,status){
+  db.collection("orders").doc(id).update({status});
+  alert("Order "+status);
+  location.reload();
+}
+
+// Load Deposits
+async function loadDeposits(){
+  const snapshot = await db.collection("deposits").get();
+  const table = document.getElementById("depositsTable");
+  snapshot.forEach(doc=>{
+    const d = doc.data();
+    const tr = document.createElement("tr");
+    tr.innerHTML=`<td>${d.uid}</td><td>${d.amount} TK</td><td>${d.status}</td>`;
+    table.appendChild(tr);
+  });
+}
+</script>
+</body>
+</html>
