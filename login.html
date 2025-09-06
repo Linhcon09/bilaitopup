@@ -64,13 +64,23 @@ document.getElementById("googleLoginBtn").addEventListener("click", async () => 
 
     // Create or merge user doc in Firestore
     const userRef = db.collection("users").doc(user.uid);
-    await userRef.set({
-      email: user.email,
-      name: user.displayName || "",
-      photoURL: user.photoURL || "",
-      balance: 0,
-      lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
+    const doc = await userRef.get();
+    if(!doc.exists) {
+      // New user
+      await userRef.set({
+        email: user.email,
+        name: user.displayName || "",
+        photoURL: user.photoURL || "",
+        balance: 0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } else {
+      // Existing user: update last login
+      await userRef.update({
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
 
     // Redirect after login
     window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
