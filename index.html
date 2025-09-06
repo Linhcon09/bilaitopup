@@ -16,82 +16,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-
-<style>
-  body {
-    margin:0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #4e54c8, #8f94fb);
-    color: #333;
-  }
-  .header {
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    padding:10px 20px;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(12px);
-    border-bottom:1px solid rgba(255,255,255,0.2);
-    position: sticky;
-    top:0;
-    z-index:100;
-  }
-  .nav-left {
-    display:flex; align-items:center; gap:10px;
-  }
-  .nav-left .logo {
-    height:40px; width:40px;
-  }
-  .nav-left .brand { font-weight:600; font-size:20px; color:#fff;}
-  .nav-right a, .nav-right button {
-    margin-left:15px; text-decoration:none; color:#fff; font-weight:500; cursor:pointer; background:none; border:none;
-  }
-  .nav-right button.logout-btn:hover, .nav-right a:hover { text-decoration:underline; }
-
-  .container { padding:20px; max-width:1200px; margin:auto; }
-
-  h1, h2 { color:#fff; text-align:center; }
-
-  .packages-grid {
-    display:grid; 
-    grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); 
-    gap:15px; 
-    margin-top:20px;
-  }
-  .package-card {
-    background: rgba(255,255,255,0.15);
-    padding:20px; 
-    border-radius:15px;
-    text-align:center; 
-    color:#fff;
-    box-shadow:0 8px 20px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .package-card:hover {
-    transform: translateY(-5px);
-    box-shadow:0 12px 25px rgba(0,0,0,0.3);
-  }
-  .package-card h3 { margin-bottom:10px; }
-  .package-card p { margin-bottom:15px; font-size:16px; }
-  .package-card button {
-    padding:8px 15px; border:none; border-radius:25px; cursor:pointer;
-    background:#fff; color:#4e54c8; font-weight:600;
-    transition:0.2s;
-  }
-  .package-card button:hover { background:#f1f1f1; }
-
-  .payment-section { margin-top:40px; background: rgba(255,255,255,0.1); padding:20px; border-radius:15px; color:#fff; }
-  .instructions p { margin:5px 0; font-size:14px; }
-  .verify-box { margin-top:15px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
-  .verify-box input { padding:10px; border-radius:25px; border:none; flex:1; min-width:180px; }
-  .verify-box button.verify-btn {
-    padding:10px 20px; border:none; border-radius:25px; background:#fff; color:#4e54c8; font-weight:600; cursor:pointer;
-    transition:0.2s;
-  }
-  .verify-box button.verify-btn:hover { background:#f1f1f1; }
-
-  footer { text-align:center; padding:10px; color:#ddd; margin-top:30px; font-size:14px; }
-</style>
 </head>
 
 <body>
@@ -140,6 +64,80 @@
   <p>© 2025 BilaiTopUp | সর্বস্বত্ব সংরক্ষিত</p>
 </footer>
 
-<script src="main.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // Check if user is logged in
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      loadPackages();
+    }
+  });
+
+  async function loadPackages() {
+    const div = document.getElementById("packages");
+    if (!div) return;
+
+    div.innerHTML = "";
+    try {
+      const snapshot = await db.collection("packages").orderBy("price").get();
+      if (snapshot.empty) {
+        div.innerHTML = "<p>কোনো প্যাকেজ পাওয়া যায়নি।</p>";
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        const p = doc.data();
+        const card = document.createElement("div");
+        card.className = "package-card";
+        card.innerHTML = `
+          <h3>${p.name}</h3>
+          <p>${p.price} TK</p>
+          <button onclick="orderPackage('${p.name}', ${p.price})">Order</button>
+        `;
+        div.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Failed to load packages:", err);
+      div.innerHTML = "<p>প্যাকেজ লোড করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।</p>";
+    }
+  }
+
+  window.orderPackage = async (name, price) => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("প্রথমে লগইন করুন!");
+      return window.location.href = "login.html";
+    }
+    const tid = prompt("আপনার Transaction ID লিখুন:");
+    if (!tid) return alert("Transaction ID প্রয়োজন!");
+
+    try {
+      await db.collection("orders").add({
+        uid: user.uid,
+        packageName: name,
+        price: Number(price),
+        transactionId: tid,
+        status: "Pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      alert("✅ আপনার অর্ডার সাবমিট হয়েছে! Status: Pending");
+    } catch (err) {
+      console.error("Order submit failed:", err);
+      alert("অর্ডার সাবমিট করতে ব্যর্থ!");
+    }
+  };
+
+  window.logout = () => {
+    auth.signOut().then(() => window.location.href = "login.html")
+      .catch(err => console.error("Logout failed:", err));
+  };
+});
+</script>
+
 </body>
   </html>
