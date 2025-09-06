@@ -1,13 +1,26 @@
-// -------------------- CONFIG --------------------
+// -------------------- FIREBASE CONFIG --------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyCSC-6WM5sUi5mMrw4DlO4-9_aFa7fX0Z8",
+  authDomain: "bilai-top-up.firebaseapp.com",
+  projectId: "bilai-top-up",
+  storageBucket: "bilai-top-up.appspot.com",
+  messagingSenderId: "576723443646",
+  appId: "1:576723443646:web:cb0aea65da0a79a21163ef",
+  measurementId: "G-D226N8W6NV"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// -------------------- ADMIN EMAILS --------------------
 const adminEmails = [
   "gamingtahmid08@gmail.com",
   "kingtahmid046@gmail.com",
   "kingtahmid1973@gmail.com",
   "tahmideditofficial@gmail.com"
 ];
-
-const auth = firebase.auth();
-const db = firebase.firestore();
 
 // -------------------- AUTH CHECK --------------------
 auth.onAuthStateChanged(async (user) => {
@@ -56,7 +69,6 @@ async function loadUsers() {
   }
 }
 
-// Change user balance by amount
 async function changeBalance(uid, amount) {
   try {
     const ref = db.collection("users").doc(uid);
@@ -72,7 +84,6 @@ async function changeBalance(uid, amount) {
   }
 }
 
-// Set custom balance
 async function customBalance(uid) {
   const val = prompt("Enter new balance:");
   if (val !== null && !isNaN(val)) {
@@ -102,13 +113,13 @@ async function loadOrders() {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${o.transactionId}</td>
-        <td>${o.uid}</td>
-        <td>${o.packageName}</td>
-        <td>${o.price} TK</td>
+        <td>${o.uid || "Unknown"}</td>
+        <td>${o.packageName || "-"}</td>
+        <td>${o.price || 0} TK</td>
         <td><span class="status ${o.status.toLowerCase()}">${o.status}</span></td>
         <td>
-          ${o.status === "Pending" ? `<button onclick="updateOrder('${doc.id}', 'Complete', '${o.uid}', ${o.price})">Approve</button>
-          <button onclick="updateOrder('${doc.id}', 'Rejected')">Reject</button>` : ''}
+          ${o.status === "Pending" ? `<button onclick="updateOrder('${doc.id}','Complete','${o.uid}',${o.price})">Approve</button>
+          <button onclick="updateOrder('${doc.id}','Rejected')">Reject</button>` : ''}
         </td>
       `;
       table.appendChild(tr);
@@ -118,12 +129,10 @@ async function loadOrders() {
   }
 }
 
-// Update order status
 async function updateOrder(orderId, status, uid = null, price = 0) {
   try {
     await db.collection("orders").doc(orderId).update({ status });
 
-    // If approved, add balance to user automatically
     if (status === "Complete" && uid) {
       const ref = db.collection("users").doc(uid);
       await db.runTransaction(async (t) => {
@@ -154,13 +163,13 @@ async function loadDeposits() {
       const d = doc.data();
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${d.uid}</td>
-        <td>${d.amount} TK</td>
-        <td>${d.transactionId}</td>
+        <td>${d.uid || "Unknown"}</td>
+        <td>${d.amount || 0} TK</td>
+        <td>${d.transactionId || "-"}</td>
         <td><span class="status ${d.status.toLowerCase()}">${d.status}</span></td>
         <td>
-          ${d.status === "Pending" ? `<button onclick="updateDeposit('${doc.id}', 'Complete', '${d.uid}', ${d.amount})">Approve</button>
-          <button onclick="updateDeposit('${doc.id}', 'Rejected')">Reject</button>` : ''}
+          ${d.status === "Pending" ? `<button onclick="updateDeposit('${doc.id}','Complete','${d.uid}',${d.amount})">Approve</button>
+          <button onclick="updateDeposit('${doc.id}','Rejected')">Reject</button>` : ''}
         </td>
       `;
       table.appendChild(tr);
@@ -170,12 +179,10 @@ async function loadDeposits() {
   }
 }
 
-// Update deposit status
 async function updateDeposit(depositId, status, uid = null, amount = 0) {
   try {
     await db.collection("deposits").doc(depositId).update({ status });
 
-    // If approved, add to user balance
     if (status === "Complete" && uid) {
       const ref = db.collection("users").doc(uid);
       await db.runTransaction(async (t) => {
@@ -191,4 +198,15 @@ async function updateDeposit(depositId, status, uid = null, amount = 0) {
   } catch (err) {
     console.error("Update deposit error:", err);
   }
-      }
+}
+
+// -------------------- ORDER SEARCH --------------------
+const searchInput = document.getElementById("searchOrder");
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    const val = searchInput.value.toLowerCase();
+    document.querySelectorAll("#ordersTable tr:not(:first-child)").forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(val) ? "" : "none";
+    });
+  });
+ }
