@@ -1,223 +1,72 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-<meta charset="UTF-8">
-<title>Admin Panel - BilaiTopUp</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+<!DOCTYPE html>  
+<html lang="bn">  
+<head>  
+<meta charset="UTF-8">  
+<title>Admin Panel - BilaiTopUp</title>  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<link rel="stylesheet" href="style.css">  
 
-<!-- Firebase Compat -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+<!-- Firebase Compat -->  
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>  
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>  
+<script src="firebase-config.js"></script>  
 
-<style>
-body { font-family: 'Poppins', sans-serif; margin:0; padding:0; background:#1f1c2c; color:#fff; min-height:100vh; }
-header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:rgba(0,0,0,0.4); backdrop-filter:blur(8px); }
-header h1 { margin:0; font-size:20px; }
-header button { background:#ff4757; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:600; }
-main { max-width:1200px; margin:20px auto; padding:0 15px; }
-section { margin-bottom:40px; }
-h2 { margin-bottom:10px; }
-table { width:100%; border-collapse:collapse; margin-bottom:20px; }
-table th, table td { border:1px solid rgba(255,255,255,0.2); padding:10px; text-align:center; font-size:14px; }
-table th { background:rgba(255,255,255,0.1); }
-button.action-btn { padding:5px 10px; margin:2px; border:none; border-radius:6px; cursor:pointer; font-weight:600; }
-button.approve { background:#2ed573; color:#000; }
-button.reject { background:#ff4757; }
-button.plus { background:#2ed573; color:#000; }
-button.minus { background:#ffa502; color:#000; }
-button.set { background:#1e90ff; }
-input.search { padding:8px 12px; margin-bottom:10px; border-radius:8px; border:none; width:100%; max-width:300px; font-size:14px; }
-@media(max-width:700px){ table th, table td{font-size:12px; padding:6px;} header h1{font-size:16px;} }
-</style>
-</head>
-<body>
-<header>
-  <h1>🔑 Admin Dashboard</h1>
-  <button id="logoutBtn">Logout</button>
-</header>
+<style>  
+body { font-family: 'Poppins', sans-serif; margin:0; padding:0; background:#1f1c2c; color:#fff; min-height:100vh; }  
+header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:rgba(0,0,0,0.4); backdrop-filter:blur(8px); }  
+header h1 { margin:0; font-size:20px; }  
+header button { background:#ff4757; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:600; }  
+main { max-width:1200px; margin:20px auto; padding:0 15px; }  
+section { margin-bottom:40px; }  
+h2 { margin-bottom:10px; }  
+table { width:100%; border-collapse:collapse; margin-bottom:20px; }  
+table th, table td { border:1px solid rgba(255,255,255,0.2); padding:10px; text-align:center; font-size:14px; }  
+table th { background:rgba(255,255,255,0.1); }  
+button.action-btn { padding:5px 10px; margin:2px; border:none; border-radius:6px; cursor:pointer; font-weight:600; }  
+button.approve { background:#2ed573; color:#000; }  
+button.reject { background:#ff4757; }  
+button.plus { background:#2ed573; color:#000; }  
+button.minus { background:#ffa502; color:#000; }  
+button.set { background:#1e90ff; }  
+input.search { padding:8px 12px; margin-bottom:10px; border-radius:8px; border:none; width:100%; max-width:300px; font-size:14px; }  
+@media(max-width:700px){ table th, table td{font-size:12px; padding:6px;} header h1{font-size:16px;} }  
+</style>  
+</head>  
+<body>  
+<header>  
+  <h1>🔑 Admin Dashboard</h1>  
+  <button id="logoutBtn">Logout</button>  
+</header>  
 
-<main>
-  <!-- Users -->
-  <section>
-    <h2>👥 Users</h2>
-    <table id="usersTable">
-      <tr><th>Email</th><th>Balance</th><th>Action</th></tr>
-    </table>
-  </section>
+<main>  
+  <!-- Users -->  
+  <section>  
+    <h2>👥 Users</h2>  
+    <table id="usersTable">  
+      <tr><th>Email</th><th>Balance</th><th>Action</th></tr>  
+    </table>  
+  </section>  
 
-  <!-- Orders -->
-  <section>
-    <h2>📦 Orders</h2>
-    <input type="text" id="searchOrder" class="search" placeholder="Search by Transaction ID or Email">
-    <table id="ordersTable">
-      <tr><th>Txn ID</th><th>User Email</th><th>Package</th><th>Price</th><th>Status</th><th>Action</th></tr>
-    </table>
-  </section>
+  <!-- Orders -->  
+  <section>  
+    <h2>📦 Orders</h2>  
+    <input type="text" id="searchOrder" class="search" placeholder="Search by Transaction ID or Email">  
+    <table id="ordersTable">  
+      <tr><th>Txn ID</th><th>User Email</th><th>Package</th><th>Price</th><th>Status</th><th>Action</th></tr>  
+    </table>  
+  </section>  
 
-  <!-- Deposits -->
-  <section>
-    <h2>💳 Deposits</h2>
-    <table id="depositsTable">
-      <tr><th>User Email</th><th>Amount</th><th>Status</th><th>Action</th></tr>
-    </table>
-  </section>
-</main>
+  <!-- Deposits -->  
+  <section>  
+    <h2>💳 Deposits</h2>  
+    <table id="depositsTable">  
+      <tr><th>User Email</th><th>Amount</th><th>Status</th><th>Action</th></tr>  
+    </table>  
+  </section>  
+</main>  
 
-<script>
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// Admin emails
-const adminEmails = [
-  "gamingtahmid08@gmail.com",
-  "kingtahmid046@gmail.com",
-  "kingtahmid1973@gmail.com",
-  "tahmideditofficial@gmail.com"
-];
-
-// Auth check
-auth.onAuthStateChanged(async user => {
-  if(!user || !adminEmails.includes(user.email)){
-    alert("Unauthorized! Admin only.");
-    window.location.href="login.html";
-  } else {
-    loadUsers();
-    loadOrders();
-    loadDeposits();
-  }
-});
-
-// Logout
-document.getElementById("logoutBtn").addEventListener("click", ()=> auth.signOut());
-
-// -------------------- USERS --------------------
-async function loadUsers(){
-  const snapshot = await db.collection("users").get();
-  const table = document.getElementById("usersTable");
-  table.innerHTML=`<tr><th>Email</th><th>Balance</th><th>Action</th></tr>`;
-  snapshot.forEach(doc=>{
-    const u = doc.data();
-    const tr = document.createElement("tr");
-    tr.innerHTML=`
-      <td>${u.email || 'Unknown'}</td>
-      <td>${u.balance || 0}</td>
-      <td>
-        <button class="action-btn plus" onclick="changeBalance('${doc.id}',10)">+10</button>
-        <button class="action-btn minus" onclick="changeBalance('${doc.id}',-10)">-10</button>
-        <button class="action-btn set" onclick="customBalance('${doc.id}')">Set</button>
-      </td>`;
-    table.appendChild(tr);
-  });
-}
-
-async function changeBalance(uid, amount){
-  const ref = db.collection("users").doc(uid);
-  await db.runTransaction(async t=>{
-    const doc = await t.get(ref);
-    let newBal = (doc.data().balance||0) + amount;
-    t.update(ref,{balance:newBal});
-  });
-  loadUsers();
-}
-
-// Custom balance
-async function customBalance(uid){
-  const val = prompt("Enter new balance:");
-  if(val!==null && !isNaN(val)){
-    await db.collection("users").doc(uid).update({balance:Number(val)});
-    loadUsers();
-  }
-}
-
-// -------------------- ORDERS --------------------
-async function loadOrders(){
-  const snapshot = await db.collection("orders").orderBy("createdAt","desc").get();
-  const table = document.getElementById("ordersTable");
-  table.innerHTML=`<tr><th>Txn ID</th><th>User Email</th><th>Package</th><th>Price</th><th>Status</th><th>Action</th></tr>`;
-
-  for(const doc of snapshot.docs){
-    const o = doc.data();
-    let userEmail = "Unknown";
-    if(o.uid){
-      const userDoc = await db.collection("users").doc(o.uid).get();
-      userEmail = userDoc.exists ? userDoc.data().email : "Unknown";
-    }
-    const tr = document.createElement("tr");
-    tr.innerHTML=`
-      <td>${o.transactionId}</td>
-      <td>${userEmail}</td>
-      <td>${o.packageName||'-'}</td>
-      <td>${o.price||'-'}</td>
-      <td>${o.status}</td>
-      <td>
-        <button class="action-btn approve" onclick="updateOrder('${doc.id}','Complete')">Approve</button>
-        <button class="action-btn reject" onclick="updateOrder('${doc.id}','Rejected')">Reject</button>
-      </td>`;
-    table.appendChild(tr);
-  }
-}
-
-// Update order status
-function updateOrder(id,status){
-  db.collection("orders").doc(id).update({status});
-  loadOrders();
-}
-
-// -------------------- DEPOSITS --------------------
-async function loadDeposits(){
-  const snapshot = await db.collection("deposits").orderBy("createdAt","desc").get();
-  const table = document.getElementById("depositsTable");
-  table.innerHTML=`<tr><th>User Email</th><th>Amount</th><th>Status</th><th>Action</th></tr>`;
-
-  for(const doc of snapshot.docs){
-    const d = doc.data();
-    let userEmail = "Unknown";
-    if(d.uid){
-      const userDoc = await db.collection("users").doc(d.uid).get();
-      userEmail = userDoc.exists ? userDoc.data().email : "Unknown";
-    }
-    const tr = document.createElement("tr");
-    tr.innerHTML=`
-      <td>${userEmail}</td>
-      <td>${d.amount}</td>
-      <td>${d.status}</td>
-      <td>
-        <button class="action-btn approve" onclick="updateDeposit('${doc.id}','Complete')">Approve</button>
-        <button class="action-btn reject" onclick="updateDeposit('${doc.id}','Rejected')">Reject</button>
-      </td>`;
-    table.appendChild(tr);
-  }
-}
-
-// Update deposit
-async function updateDeposit(id,status){
-  const depositRef = db.collection("deposits").doc(id);
-  const doc = await depositRef.get();
-  const data = doc.data();
-  if(status==="Complete" && data.uid){
-    const userRef = db.collection("users").doc(data.uid);
-    await db.runTransaction(async t=>{
-      const userDoc = await t.get(userRef);
-      let newBal = (userDoc.data().balance||0) + (data.amount||0);
-      t.update(userRef,{balance:newBal});
-      t.update(depositRef,{status});
-    });
-  } else {
-    await depositRef.update({status});
-  }
-  loadDeposits();
-}
-
-// -------------------- ORDER SEARCH --------------------
-document.getElementById("searchOrder").addEventListener("input", ()=>{
-  const val = document.getElementById("searchOrder").value.toLowerCase();
-  document.querySelectorAll("#ordersTable tr:not(:first-child)").forEach(row=>{
-    row.style.display = row.textContent.toLowerCase().includes(val) ? "" : "none";
-  });
-});
-</script>
-</body>
+<!-- Link your external admin.js here -->  
+<script src="admin.js"></script>  
+</body>  
 </html>
