@@ -2,10 +2,20 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<title>BilaiTopUp: Free Fire Diamond Top Up Website for Bangladesh</title>
+<title>BilaiTopUp - Free Fire Diamond Top Up Website for Bangladesh</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Google Fonts -->
+  <!-- SEO Meta Tags -->
+<meta name="description" content="BilaiTopUp - বাংলাদেশের বিশ্বস্ত Free Fire Diamond Top Up ওয়েবসাইট। এখানে সহজে bKash দিয়ে ডায়মন্ড কিনুন। নিরাপদ, দ্রুত ও সাশ্রয়ী মূল্যে ডায়মন্ড পাওয়া যাবে।">
+<meta name="keywords" content="Free Fire Diamond Top Up, Free Fire BD Top Up, BilaiTopUp, Diamond Buy Bangladesh, bKash Free Fire Topup, Garena Free Fire Diamond, ফ্রি ফায়ার টপআপ, বাংলাদেশ ডায়মন্ড টপআপ, bkash দিয়ে ডায়মন্ড কিনুন">
+<meta name="author" content="Tahmid">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="BilaiTopUp - Free Fire Diamond Top Up Bangladesh">
+<meta property="og:description" content="বাংলাদেশে নিরাপদে bKash দিয়ে Free Fire Diamond কিনুন। BilaiTopUp দিচ্ছে দ্রুত ডেলিভারি ও কম দামে টপআপ।">
+<meta property="og:image" content="logo.png">
+<meta property="og:url" content="https://tahmid1dev.github.io/bilaitopup/">
+
+  <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 <!-- Styles -->
@@ -15,7 +25,20 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+
+<script>
+  // -------------------- FIREBASE CONFIG --------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyCSC-6WM5sUi5mMrw4DlO4-9_aFa7fX0Z8",
+    authDomain: "bilai-top-up.firebaseapp.com",
+    projectId: "bilai-top-up",
+    storageBucket: "bilai-top-up.appspot.com",
+    messagingSenderId: "576723443646",
+    appId: "1:576723443646:web:cb0aea65da0a79a21163ef",
+    measurementId: "G-D226N8W6NV"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
 </head>
 
 <body>
@@ -38,7 +61,40 @@
   <!-- Packages -->
   <section class="packages-section">
     <h1>💎 ডায়মন্ড প্যাকেজ</h1>
-    <div id="packages" class="packages-grid"></div>
+    <div class="packages-grid" id="packages">
+      <!-- Category: Small -->
+      <h2>🔹 Small Packages</h2>
+      <div class="package-card"><h3>25 Diamond</h3><p>24 TK</p><button onclick="orderPackage('25 Diamond',24)">Order</button></div>
+      <div class="package-card"><h3>50 Diamond</h3><p>38 TK</p><button onclick="orderPackage('50 Diamond',38)">Order</button></div>
+      <div class="package-card"><h3>115 Diamond</h3><p>82 TK</p><button onclick="orderPackage('115 Diamond',82)">Order</button></div>
+      <div class="package-card"><h3>240 Diamond</h3><p>158 TK</p><button onclick="orderPackage('240 Diamond',158)">Order</button></div>
+
+      <!-- Category: Medium -->
+      <h2>🔹 Medium Packages</h2>
+      <div class="package-card"><h3>355 Diamond</h3><p>235 TK</p><button onclick="orderPackage('355 Diamond',235)">Order</button></div>
+      <div class="package-card"><h3>480 Diamond</h3><p>312 TK</p><button onclick="orderPackage('480 Diamond',312)">Order</button></div>
+      <div class="package-card"><h3>505 Diamond</h3><p>347 TK</p><button onclick="orderPackage('505 Diamond',347)">Order</button></div>
+      <div class="package-card"><h3>610 Diamond</h3><p>395 TK</p><button onclick="orderPackage('610 Diamond',395)">Order</button></div>
+      <div class="package-card"><h3>850 Diamond</h3><p>550 TK</p><button onclick="orderPackage('850 Diamond',550)">Order</button></div>
+
+      <!-- Category: Large -->
+      <h2>🔹 Large Packages</h2>
+      <div class="package-card"><h3>1090 Diamond</h3><p>738 TK</p><button onclick="orderPackage('1090 Diamond',738)">Order</button></div>
+      <div class="package-card"><h3>1240 Diamond</h3><p>787 TK</p><button onclick="orderPackage('1240 Diamond',787)">Order</button></div>
+      <div class="package-card"><h3>2530 Diamond</h3><p>1590 TK</p><button onclick="orderPackage('2530 Diamond',1590)">Order</button></div>
+      <div class="package-card"><h3>5060 Diamond</h3><p>3177 TK</p><button onclick="orderPackage('5060 Diamond',3177)">Order</button></div>
+      <div class="package-card"><h3>10120 Diamond</h3><p>6297 TK</p><button onclick="orderPackage('10120 Diamond',6297)">Order</button></div>
+      <div class="package-card"><h3>12650 Diamond</h3><p>7870 TK</p><button onclick="orderPackage('12650 Diamond',7870)">Order</button></div>
+
+      <!-- Category: Weekly/Monthly -->
+      <h2>🔹 Weekly / Monthly</h2>
+      <div class="package-card"><h3>Weekly</h3><p>160 TK</p><button onclick="orderPackage('Weekly',160)">Order</button></div>
+      <div class="package-card"><h3>Monthly</h3><p>779 TK</p><button onclick="orderPackage('Monthly',779)">Order</button></div>
+      <div class="package-card"><h3>Weekly 2x</h3><p>315 TK</p><button onclick="orderPackage('Weekly 2x',315)">Order</button></div>
+      <div class="package-card"><h3>Weekly 3x</h3><p>471 TK</p><button onclick="orderPackage('Weekly 3x',471)">Order</button></div>
+      <div class="package-card"><h3>Weekly Lite</h3><p>45 TK</p><button onclick="orderPackage('Weekly Lite',45)">Order</button></div>
+      <div class="package-card"><h3>5x Weekly Lite</h3><p>212 TK</p><button onclick="orderPackage('5x Weekly Lite',212)">Order</button></div>
+    </div>
   </section>
 
   <!-- Payment -->
@@ -51,11 +107,13 @@
       <p>টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী টাকার পরিমাণ)</p>
       <p>নিশ্চিত করতে আপনার পিন লিখুন।</p>
       <p>সবকিছু ঠিক থাকলে bKash থেকে একটি কনফার্মেশন বার্তা পাবেন।</p>
-      <p>এখন নিচের বক্সে Transaction ID দিন এবং VERIFY করুন।</p>
+      <p>এখন নিচের বক্সে Free Fire UID, Mobile Number এবং Transaction ID দিন।</p>
     </div>
+
     <div class="verify-box">
-      <input type="text" id="transactionId" placeholder="Transaction ID লিখুন">
-      <button id="verifyBtn" class="verify-btn">✅ VERIFY</button>
+      <input type="number" id="ffuid" placeholder="Free Fire UID">
+      <input type="number" id="mobile" placeholder="Mobile Number">
+      <input type="text" id="transactionId" placeholder="Transaction ID">
     </div>
   </section>
 </main>
@@ -69,58 +127,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // Check if user is logged in
+  // Check auth
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "login.html";
-    } else {
-      loadPackages();
     }
   });
 
-  async function loadPackages() {
-    const div = document.getElementById("packages");
-    if (!div) return;
-
-    div.innerHTML = "";
-    try {
-      const snapshot = await db.collection("packages").orderBy("price").get();
-      if (snapshot.empty) {
-        div.innerHTML = "<p>কোনো প্যাকেজ পাওয়া যায়নি।</p>";
-        return;
-      }
-
-      snapshot.forEach(doc => {
-        const p = doc.data();
-        const card = document.createElement("div");
-        card.className = "package-card";
-        card.innerHTML = `
-          <h3>${p.name}</h3>
-          <p>${p.price} TK</p>
-          <button onclick="orderPackage('${p.name}', ${p.price})">Order</button>
-        `;
-        div.appendChild(card);
-      });
-    } catch (err) {
-      console.error("Failed to load packages:", err);
-      div.innerHTML = "<p>প্যাকেজ লোড করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।</p>";
-    }
-  }
-
+  // Place order
   window.orderPackage = async (name, price) => {
     const user = auth.currentUser;
-    if (!user) {
-      alert("প্রথমে লগইন করুন!");
-      return window.location.href = "login.html";
-    }
-    const tid = prompt("আপনার Transaction ID লিখুন:");
-    if (!tid) return alert("Transaction ID প্রয়োজন!");
+    if (!user) return window.location.href = "login.html";
+
+    const ffuid = document.getElementById("ffuid").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
+    const tid = document.getElementById("transactionId").value.trim();
+
+    if (!ffuid || !mobile || !tid) return alert("⚠️ সব ফিল্ড পূরণ করুন!");
+    if (isNaN(ffuid) || isNaN(mobile)) return alert("⚠️ UID এবং Mobile Number অবশ্যই সংখ্যা হতে হবে!");
 
     try {
       await db.collection("orders").add({
         uid: user.uid,
         packageName: name,
         price: Number(price),
+        ffuid,
+        mobile,
         transactionId: tid,
         status: "Pending",
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -128,10 +160,11 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("✅ আপনার অর্ডার সাবমিট হয়েছে! Status: Pending");
     } catch (err) {
       console.error("Order submit failed:", err);
-      alert("অর্ডার সাবমিট করতে ব্যর্থ!");
+      alert("❌ অর্ডার সাবমিট করতে সমস্যা হয়েছে!");
     }
   };
 
+  // Logout
   window.logout = () => {
     auth.signOut().then(() => window.location.href = "login.html")
       .catch(err => console.error("Logout failed:", err));
