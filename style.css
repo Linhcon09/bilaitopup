@@ -22,139 +22,108 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 25px;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(12px);
+  padding: 18px 30px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(14px);
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 }
 
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 15px;
 }
 
 .logo {
-  width: 50px;
-  height: 50px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #ffda79;
 }
 
 .brand {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   color: #ffda79;
-  text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
 .nav-right a,
 .logout-btn {
-  margin-left: 15px;
+  margin-left: 18px;
   font-size: 16px;
   text-decoration: none;
   color: #fff;
-  padding: 10px 16px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  padding: 10px 18px;
+  border-radius: 14px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
 }
 
 .nav-right a:hover,
 .logout-btn:hover {
-  background: rgba(255,255,255,0.2);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .logout-btn {
   background: #ff4757;
   border: none;
   cursor: pointer;
-  font-weight: 600;
 }
 
 /* ===================== Container ===================== */
 .container {
   flex: 1;
-  padding: 25px 20px;
-  max-width: 1200px;
+  padding: 30px 25px;
+  max-width: 1250px;
   margin: auto;
 }
 
 /* ===================== Section Titles ===================== */
 h1, h2 {
   font-size: 28px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   text-align: center;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
-}
-
-/* ===================== Profile Box ===================== */
-.profile-box {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 30px;
-  background: rgba(255,255,255,0.12);
-  padding: 15px 20px;
-  border-radius: 18px;
-  backdrop-filter: blur(12px);
-}
-
-.profile-box img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ffda79;
-}
-
-.profile-box .user-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.profile-box .user-info span {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* ===================== Wallet ===================== */
-.wallet {
-  background: rgba(255,255,255,0.12);
-  padding: 15px 20px;
-  border-radius: 18px;
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #1dd1a1;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  animation: glow 2s infinite alternate;
-}
-
-@keyframes glow {
-  0% { text-shadow: 0 0 5px #1dd1a1, 0 0 10px #1dd1a1; }
-  100% { text-shadow: 0 0 15px #1dd1a1, 0 0 30px #1dd1a1; }
+  text-shadow: 0 1px 5px rgba(0,0,0,0.45);
+  letter-spacing: 0.5px;
 }
 
 /* ===================== Packages Grid ===================== */
 .packages-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 25px;
 }
 
 .package-card {
-  background: rgba(255,255,255,0.15);
-  border-radius: 18px;
-  padding: 25px 15px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 25px 20px;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  backdrop-filter: blur(12px);
+  cursor: pointer;
+  backdrop-filter: blur(14px);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transition: all 0.35s cubic-bezier(.25,.8,.25,1);
+}
+
+.package-card.selected {
+  border: 2px solid #ffda79;
+  background: rgba(255,218,121,0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.35);
+}
+
+.package-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.35);
 }
 
 .package-card::after {
@@ -164,7 +133,7 @@ h1, h2 {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 65%);
   transform: rotate(45deg);
   opacity: 0;
   transition: all 0.5s ease;
@@ -176,12 +145,13 @@ h1, h2 {
 
 .package-card h3 {
   font-size: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  color: #fff;
 }
 
 .package-card p {
   font-size: 18px;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
   color: #ffda79;
   font-weight: 600;
 }
@@ -190,8 +160,8 @@ h1, h2 {
   background: #1dd1a1;
   color: #fff;
   border: none;
-  border-radius: 25px;
-  padding: 12px 20px;
+  border-radius: 28px;
+  padding: 12px 22px;
   font-size: 16px;
   cursor: pointer;
   font-weight: 600;
@@ -200,23 +170,24 @@ h1, h2 {
 
 .package-card button:hover {
   background: #10ac84;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
 }
 
-/* ===================== Payment Instructions ===================== */
+/* ===================== Payment Section ===================== */
 .payment-section {
   margin-top: 50px;
-  background: rgba(0,0,0,0.35);
-  padding: 25px;
-  border-radius: 18px;
-  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,0.38);
+  padding: 30px 25px;
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
 
 .instructions p {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* ===================== Verify Box ===================== */
@@ -225,42 +196,70 @@ h1, h2 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 15px;
-  margin-top: 20px;
+  margin-top: 25px;
 }
 
 .verify-box input {
   flex: 1;
   min-width: 200px;
-  max-width: 400px;
-  padding: 12px 15px;
-  border-radius: 25px;
+  max-width: 420px;
+  padding: 14px 18px;
+  border-radius: 28px;
   border: none;
   font-size: 16px;
   outline: none;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.verify-box input:focus {
+  background: rgba(255,255,255,0.15);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.45);
 }
 
 .verify-btn {
   background: #3742fa;
   color: #fff;
-  padding: 12px 25px;
+  padding: 14px 28px;
   border: none;
-  border-radius: 25px;
+  border-radius: 28px;
   font-size: 16px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   transition: all 0.3s ease;
 }
 
 .verify-btn:hover {
   background: #2f3542;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
 }
 
-/* ===================== Order Status ===================== */
+/* ===================== Selected Price ===================== */
+.selected-price {
+  font-weight: 700;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 15px;
+  color: #ffda79;
+  text-shadow: 0 1px 5px rgba(0,0,0,0.4);
+}
+
+/* ===================== Footer ===================== */
+footer {
+  text-align: center;
+  padding: 20px 15px;
+  font-size: 14px;
+  background: rgba(0,0,0,0.42);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* ===================== Status Badges ===================== */
 .status {
-  padding: 6px 14px;
-  border-radius: 12px;
+  padding: 6px 16px;
+  border-radius: 16px;
   font-weight: 600;
   text-transform: capitalize;
   font-size: 14px;
@@ -278,27 +277,17 @@ h1, h2 {
   100% { transform: scale(1); }
 }
 
-/* ===================== Footer ===================== */
-footer {
-  text-align: center;
-  padding: 15px;
-  font-size: 14px;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(8px);
-}
-
 /* ===================== Responsive ===================== */
 @media (max-width: 768px) {
   h1, h2 { font-size: 24px; }
   .nav-right a, .logout-btn { font-size: 14px; padding: 6px 12px; }
-  .brand { font-size: 20px; }
-  .package-card { padding: 20px 12px; }
+  .brand { font-size: 22px; }
+  .package-card { padding: 22px 15px; }
 }
 
 @media (max-width: 480px) {
-  .packages-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+  .packages-grid { grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 15px; }
   h1, h2 { font-size: 20px; }
   .verify-box { flex-direction: column; }
   .verify-box input, .verify-btn { width: 100%; }
-  .profile-box { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
   }
