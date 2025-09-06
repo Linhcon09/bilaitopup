@@ -4,47 +4,25 @@
 <meta charset="UTF-8">
 <title>BilaiTopUp - Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-<!-- Styles -->
 <style>
-  body {
-    margin:0;
-    font-family: 'Poppins', sans-serif;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    background: linear-gradient(135deg, #4e54c8, #8f94fb);
-    color:#fff;
-  }
-  .login-container {
-    background: rgba(0,0,0,0.4);
-    padding:40px;
-    border-radius:15px;
-    text-align:center;
-    backdrop-filter: blur(10px);
-    width:90%;
-    max-width:400px;
-  }
-  h1 { margin-bottom:30px; font-size:24px; color:#ffda79; }
-  button {
-    background:#4285F4;
-    border:none;
-    color:#fff;
-    padding:12px 25px;
-    border-radius:8px;
-    font-size:16px;
-    cursor:pointer;
-    transition:0.3s;
-    margin-top:20px;
-  }
-  button:hover { background:#357ae8; }
+body {
+  margin:0; font-family: 'Poppins', sans-serif;
+  display:flex; justify-content:center; align-items:center;
+  height:100vh; background: linear-gradient(135deg, #4e54c8, #8f94fb); color:#fff;
+}
+.login-container {
+  background: rgba(0,0,0,0.4); padding:40px; border-radius:15px;
+  text-align:center; backdrop-filter: blur(10px); width:90%; max-width:400px;
+}
+h1 { margin-bottom:30px; font-size:24px; color:#ffda79; }
+button {
+  background:#4285F4; border:none; color:#fff; padding:12px 25px;
+  border-radius:8px; font-size:16px; cursor:pointer; transition:0.3s; margin-top:20px;
+}
+button:hover { background:#357ae8; }
 </style>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -57,54 +35,50 @@
 </div>
 
 <script>
-  // ------------------- Firebase Init -------------------
-  const firebaseConfig = {
-    apiKey: "AIzaSyCSC-6WM5sUi5mMrw4DlO4-9_aFa7fX0Z8",
-    authDomain: "bilai-top-up.firebaseapp.com",
-    projectId: "bilai-top-up",
-    storageBucket: "bilai-top-up.appspot.com",
-    messagingSenderId: "576723443646",
-    appId: "1:576723443646:web:cb0aea65da0a79a21163ef",
-    measurementId: "G-D226N8W6NV"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyCSC-6WM5sUi5mMrw4DlO4-9_aFa7fX0Z8",
+  authDomain: "bilai-top-up.firebaseapp.com",
+  projectId: "bilai-top-up",
+  storageBucket: "bilai-top-up.appspot.com",
+  messagingSenderId: "576723443646",
+  appId: "1:576723443646:web:cb0aea65da0a79a21163ef",
+  measurementId: "G-D226N8W6NV"
+};
+firebase.initializeApp(firebaseConfig);
 
-  firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+// Redirect if already logged in
+auth.onAuthStateChanged(user => {
+  if(user) window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
+});
 
-  // ------------------- Google Login -------------------
-  document.getElementById("googleLoginBtn").addEventListener("click", async () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    try {
-      const result = await auth.signInWithPopup(provider);
-      const user = result.user;
+// Google login
+document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    const result = await auth.signInWithPopup(provider);
+    const user = result.user;
+    if(!user) throw new Error("No user returned from login!");
 
-      // Check if user exists in 'users' collection, if not create
-      const userRef = db.collection("users").doc(user.uid);
-      const doc = await userRef.get();
-      if (!doc.exists) {
-        await userRef.set({
-          email: user.email,
-          balance: 0,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      }
+    // Create or merge user doc in Firestore
+    const userRef = db.collection("users").doc(user.uid);
+    await userRef.set({
+      email: user.email,
+      name: user.displayName || "",
+      photoURL: user.photoURL || "",
+      balance: 0,
+      lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
 
-      // Redirect after login
-      window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("Login failed: " + err.message);
-    }
-  });
-
-  // ------------------- Auto redirect if already logged in -------------------
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
-    }
-  });
+    // Redirect after login
+    window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
+  } catch(err) {
+    console.error("Login failed:", err);
+    alert("Login failed: " + err.message);
+  }
+});
 </script>
 </body>
 </html>
