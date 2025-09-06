@@ -8,7 +8,6 @@ const firebaseConfig = {
   appId: "1:576723443646:web:cb0aea65da0a79a21163ef",
   measurementId: "G-D226N8W6NV"
 };
-
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
@@ -45,16 +44,16 @@ function logout() {
 async function loadUsers() {
   const table = document.getElementById("usersTable");
   if (!table) return;
-
-  table.innerHTML = `<tr><th>Email</th><th>Balance</th><th>Action</th></tr>`;
+  table.innerHTML = `<tr><th>Email/UID</th><th>Balance</th><th>Action</th></tr>`;
 
   try {
+    // Try to load from users collection
     const snapshot = await db.collection("users").get();
     snapshot.forEach(doc => {
       const u = doc.data();
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${u.email || 'Unknown'}</td>
+        <td>${u.email || doc.id}</td>
         <td>${u.balance || 0} TK</td>
         <td>
           <button onclick="changeBalance('${doc.id}', 10)">+10</button>
@@ -65,37 +64,69 @@ async function loadUsers() {
       table.appendChild(tr);
     });
   } catch (err) {
-    console.error("Load users error:", err);
+    console.warn("Cannot load from users collection, trying fallback...", err);
+    // Fallback: collect users from orders
+    const usersSet = new Set();
+    const ordersSnapshot = await db.collection("orders").get();
+    ordersSnapshot.forEach(doc => usersSet.add(doc.data().uid));
+    const depositsSnapshot = await db.collection("deposits").get();
+    depositsSnapshot.forEach(doc => usersSet.add(doc.data().uid));
+
+    usersSet.forEach(uid => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${uid}</td>
+        <td>-</td>
+        <td>
+          <button onclick="promptChangeBalance('${uid}')">Set Balance</button>
+        </td>
+      `;
+      table.appendChild(tr);
+    });
   }
 }
 
+// Change balance by amount
 async function changeBalance(uid, amount) {
   try {
     const ref = db.collection("users").doc(uid);
-    await db.runTransaction(async (t) => {
+    await db.runTransaction(async t => {
       const doc = await t.get(ref);
-      const newBal = (doc.data().balance || 0) + amount;
+      const newBal = (doc.data()?.balance || 0) + amount;
       t.update(ref, { balance: newBal });
     });
     alert("✅ Balance updated!");
     loadUsers();
   } catch (err) {
     console.error("Change balance error:", err);
+    alert("❌ Cannot change balance. Check if user exists in 'users' collection.");
   }
 }
 
+// Set custom balance
 async function customBalance(uid) {
   const val = prompt("Enter new balance:");
   if (val !== null && !isNaN(val)) {
     try {
-      await db.collection("users").doc(uid).update({ balance: Number(val) });
+      await db.collection("users").doc(uid).set({ balance: Number(val) }, { merge: true });
       alert("✅ Balance set!");
       loadUsers();
     } catch (err) {
       console.error("Custom balance error:", err);
+      alert("❌ Cannot set balance. User may not exist.");
     }
   } else {
     alert("❌ Invalid number!");
+  }
+}
+
+// Prompt to create user for fallback
+function promptChangeBalance(uid) {
+  const val = prompt(`Set balance for user ${uid}:`);
+  if (val !== null && !isNaN(val)) {
+    db.collection("users").doc(uid).set({ balance: Number(val) }, { merge: true })
+      .then(() => { alert("✅ Balance set!"); loadUsers(); })
+      .catch(err => { console.error(err); alert("❌ Cannot set balance."); });
   }
 }
 
@@ -103,17 +134,16 @@ async function customBalance(uid) {
 async function loadOrders() {
   const table = document.getElementById("ordersTable");
   if (!table) return;
-
   table.innerHTML = `<tr><th>Txn ID</th><th>User</th><th>Package</th><th>Price</th><th>Status</th><th>Action</th></tr>`;
 
   try {
-    const snapshot = await db.collection("orders").orderBy("createdAt", "desc").get();
+    const snapshot = await db.collection("orders").orderBy("createdAt","desc").get();
     snapshot.forEach(doc => {
       const o = doc.data();
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${o.transactionId}</td>
-        <td>${o.uid || "Unknown"}</td>
+        <td>${o.uid}</td>
         <td>${o.packageName || "-"}</td>
         <td>${o.price || 0} TK</td>
         <td><span class="status ${o.status.toLowerCase()}">${o.status}</span></td>
@@ -129,24 +159,19 @@ async function loadOrders() {
   }
 }
 
-async function updateOrder(orderId, status, uid = null, price = 0) {
+async function updateOrder(orderId, status, uid=null, price=0) {
   try {
     await db.collection("orders").doc(orderId).update({ status });
-
     if (status === "Complete" && uid) {
-      const ref = db.collection("users").doc(uid);
-      await db.runTransaction(async (t) => {
-        const doc = await t.get(ref);
-        const newBal = (doc.data().balance || 0) + Number(price);
-        t.update(ref, { balance: newBal });
-      });
+      // Update balance safely
+      await db.collection("users").doc(uid).set({ balance: price }, { merge: true });
     }
-
     alert(`✅ Order ${status}`);
     loadOrders();
-    if (uid) loadUsers();
+    loadUsers();
   } catch (err) {
-    console.error("Update order error:", err);
+    console.error(err);
+    alert("❌ Cannot update order balance.");
   }
 }
 
@@ -154,16 +179,15 @@ async function updateOrder(orderId, status, uid = null, price = 0) {
 async function loadDeposits() {
   const table = document.getElementById("depositsTable");
   if (!table) return;
-
   table.innerHTML = `<tr><th>User</th><th>Amount</th><th>Transaction ID</th><th>Status</th><th>Action</th></tr>`;
 
   try {
-    const snapshot = await db.collection("deposits").orderBy("createdAt", "desc").get();
+    const snapshot = await db.collection("deposits").orderBy("createdAt","desc").get();
     snapshot.forEach(doc => {
       const d = doc.data();
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${d.uid || "Unknown"}</td>
+        <td>${d.uid}</td>
         <td>${d.amount || 0} TK</td>
         <td>${d.transactionId || "-"}</td>
         <td><span class="status ${d.status.toLowerCase()}">${d.status}</span></td>
@@ -179,24 +203,18 @@ async function loadDeposits() {
   }
 }
 
-async function updateDeposit(depositId, status, uid = null, amount = 0) {
+async function updateDeposit(depositId, status, uid=null, amount=0) {
   try {
     await db.collection("deposits").doc(depositId).update({ status });
-
     if (status === "Complete" && uid) {
-      const ref = db.collection("users").doc(uid);
-      await db.runTransaction(async (t) => {
-        const doc = await t.get(ref);
-        const newBal = (doc.data().balance || 0) + Number(amount);
-        t.update(ref, { balance: newBal });
-      });
+      await db.collection("users").doc(uid).set({ balance: amount }, { merge: true });
     }
-
     alert(`✅ Deposit ${status}`);
     loadDeposits();
-    if (uid) loadUsers();
+    loadUsers();
   } catch (err) {
-    console.error("Update deposit error:", err);
+    console.error(err);
+    alert("❌ Cannot update deposit balance.");
   }
 }
 
@@ -209,4 +227,4 @@ if (searchInput) {
       row.style.display = row.textContent.toLowerCase().includes(val) ? "" : "none";
     });
   });
- }
+}
