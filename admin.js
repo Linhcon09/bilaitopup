@@ -24,7 +24,7 @@ const adminEmails = [
 // -------------------- AUTH CHECK --------------------
 auth.onAuthStateChanged(async (user) => {
   if (!user || !adminEmails.includes(user.email)) {
-    alert("Unauthorized! Only admin can access.");
+    alert("❌ Unauthorized! Only admin can access.");
     window.location.href = "login.html";
   } else {
     console.log("✅ Admin logged in:", user.email);
@@ -64,7 +64,7 @@ async function loadUsers() {
         table.appendChild(tr);
       });
     } else {
-      // Fallback: gather users from orders and deposits
+      // Fallback: gather from orders and deposits
       const usersSet = new Set();
       const ordersSnapshot = await db.collection("orders").get();
       ordersSnapshot.forEach(doc => usersSet.add(doc.data().uid));
@@ -86,7 +86,6 @@ async function loadUsers() {
   }
 }
 
-// Change balance by amount
 async function changeBalance(uid, amount) {
   try {
     const ref = db.collection("users").doc(uid);
@@ -103,7 +102,6 @@ async function changeBalance(uid, amount) {
   }
 }
 
-// Set custom balance
 async function customBalance(uid) {
   const val = prompt("Enter new balance:");
   if (val !== null && !isNaN(val)) {
@@ -120,7 +118,6 @@ async function customBalance(uid) {
   }
 }
 
-// Fallback for unknown users
 function promptChangeBalance(uid) {
   const val = prompt(`Set balance for user ${uid}:`);
   if (val !== null && !isNaN(val)) {
@@ -134,7 +131,10 @@ function promptChangeBalance(uid) {
 async function loadOrders() {
   const table = document.getElementById("ordersTable");
   if (!table) return;
-  table.innerHTML = `<tr><th>Txn ID</th><th>User</th><th>Package</th><th>Price</th><th>Status</th><th>Action</th></tr>`;
+  table.innerHTML = `<tr>
+    <th>User</th><th>FF UID</th><th>Mobile</th><th>Txn ID</th>
+    <th>Package</th><th>Price</th><th>Status</th><th>Action</th>
+  </tr>`;
 
   try {
     const snapshot = await db.collection("orders").orderBy("createdAt","desc").get();
@@ -142,14 +142,17 @@ async function loadOrders() {
       const o = doc.data();
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${o.transactionId}</td>
-        <td>${o.uid}</td>
+        <td>${o.email || o.uid}</td>
+        <td>${o.ffuid || "-"}</td>
+        <td>${o.mobile || "-"}</td>
+        <td>${o.transactionId || "-"}</td>
         <td>${o.packageName || "-"}</td>
         <td>${o.price || 0} TK</td>
-        <td><span class="status ${o.status.toLowerCase()}">${o.status}</span></td>
+        <td><span class="status ${o.status?.toLowerCase()}">${o.status}</span></td>
         <td>
-          ${o.status === "Pending" ? `<button onclick="updateOrder('${doc.id}','Complete','${o.uid}',${o.price})">Approve</button>
-          <button onclick="updateOrder('${doc.id}','Rejected')">Reject</button>` : ''}
+          ${o.status === "Pending" ? `
+            <button onclick="updateOrder('${doc.id}','Completed','${o.uid}',${o.price})">Approve</button>
+            <button onclick="updateOrder('${doc.id}','Rejected')">Reject</button>` : ''}
         </td>
       `;
       table.appendChild(tr);
@@ -162,7 +165,7 @@ async function loadOrders() {
 async function updateOrder(orderId, status, uid=null, price=0) {
   try {
     await db.collection("orders").doc(orderId).update({ status });
-    if (status === "Complete" && uid) {
+    if (status === "Completed" && uid) {
       const ref = db.collection("users").doc(uid);
       await db.runTransaction(async t => {
         const doc = await t.get(ref);
@@ -194,10 +197,11 @@ async function loadDeposits() {
         <td>${d.uid}</td>
         <td>${d.amount || 0} TK</td>
         <td>${d.transactionId || "-"}</td>
-        <td><span class="status ${d.status.toLowerCase()}">${d.status}</span></td>
+        <td><span class="status ${d.status?.toLowerCase()}">${d.status}</span></td>
         <td>
-          ${d.status === "Pending" ? `<button onclick="updateDeposit('${doc.id}','Complete','${d.uid}',${d.amount})">Approve</button>
-          <button onclick="updateDeposit('${doc.id}','Rejected')">Reject</button>` : ''}
+          ${d.status === "Pending" ? `
+            <button onclick="updateDeposit('${doc.id}','Completed','${d.uid}',${d.amount})">Approve</button>
+            <button onclick="updateDeposit('${doc.id}','Rejected')">Reject</button>` : ''}
         </td>
       `;
       table.appendChild(tr);
@@ -210,7 +214,7 @@ async function loadDeposits() {
 async function updateDeposit(depositId, status, uid=null, amount=0) {
   try {
     await db.collection("deposits").doc(depositId).update({ status });
-    if (status === "Complete" && uid) {
+    if (status === "Completed" && uid) {
       const ref = db.collection("users").doc(uid);
       await db.runTransaction(async t => {
         const doc = await t.get(ref);
@@ -236,4 +240,4 @@ if (searchInput) {
       row.style.display = row.textContent.toLowerCase().includes(val) ? "" : "none";
     });
   });
-}
+        }
