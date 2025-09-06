@@ -1,125 +1,97 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <title>Login - BilaiTopUp</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Firebase Compat -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="firebase-config.js"></script>
-  
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>BilaiTopUp - Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      font-family: 'Poppins', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #4e54c8, #8f94fb);
-      overflow: hidden;
-    }
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    .login-container {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
-      padding: 40px 30px;
-      width: 90%;
-      max-width: 380px;
-      text-align: center;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      animation: fadeIn 1.2s ease;
-    }
+<!-- Styles -->
+<style>
+  body {
+    margin:0;
+    font-family: 'Poppins', sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color:#fff;
+  }
+  .login-container {
+    background: rgba(0,0,0,0.4);
+    padding:40px;
+    border-radius:15px;
+    text-align:center;
+    backdrop-filter: blur(10px);
+    width:90%;
+    max-width:400px;
+  }
+  h1 { margin-bottom:30px; font-size:24px; color:#ffda79; }
+  button {
+    background:#4285F4;
+    border:none;
+    color:#fff;
+    padding:12px 25px;
+    border-radius:8px;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+    margin-top:20px;
+  }
+  button:hover { background:#357ae8; }
+</style>
 
-    .login-container h1 {
-      color: #fff;
-      font-size: 30px;
-      margin-bottom: 10px;
-    }
-
-    .login-container p {
-      color: #f0f0f0;
-      margin-bottom: 25px;
-      font-size: 15px;
-    }
-
-    .google-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      background: #fff;
-      color: #444;
-      font-weight: 600;
-      border: none;
-      border-radius: 50px;
-      padding: 14px 20px;
-      width: 100%;
-      cursor: pointer;
-      transition: 0.3s;
-      font-size: 16px;
-    }
-
-    .google-btn:hover {
-      background: #f1f1f1;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-    }
-
-    .google-icon {
-      width: 22px;
-      height: 22px;
-    }
-
-    footer {
-      margin-top: 30px;
-      font-size: 13px;
-      color: #ddd;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(30px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-  </style>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 </head>
+
 <body>
+<div class="login-container">
+  <h1>Login to BilaiTopUp</h1>
+  <button id="googleLoginBtn">Continue with Google</button>
+</div>
 
-  <div class="login-container">
-    <h1>🚀 BilaiTopUp</h1>
-    <p>Google দিয়ে লগইন করুন এবং সহজেই ডায়মন্ড টপ-আপ করুন</p>
-    
-    <button class="google-btn" id="googleLoginBtn">
-      <img src="https://www.svgrepo.com/show/355037/google.svg" class="google-icon" alt="Google">
-      Google দিয়ে লগইন করুন
-    </button>
-    
-    <footer>
-      © 2025 BilaiTopUp | সর্বস্বত্ব সংরক্ষিত
-    </footer>
-  </div>
+<script>
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  <script>
-    const auth = firebase.auth();
-    const provider = new firebase.auth.GoogleAuthProvider();
+document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    const result = await auth.signInWithPopup(provider);
+    const user = result.user;
 
-    document.getElementById("googleLoginBtn").addEventListener("click", () => {
-      auth.signInWithPopup(provider)
-        .then(result => {
-          console.log("✅ Logged in:", result.user.email);
-          window.location.href = "index.html"; 
-        })
-        .catch(err => alert("❌ লগইন ব্যর্থ: " + err.message));
-    });
-  </script>
+    // Check if user exists in 'users' collection, if not create
+    const userRef = db.collection("users").doc(user.uid);
+    const doc = await userRef.get();
+    if(!doc.exists){
+      await userRef.set({
+        email: user.email,
+        balance: 0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    // Redirect after successful login
+    window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
+  } catch(err) {
+    console.error("Login error:", err);
+    alert("Login failed: " + err.message);
+  }
+});
+
+// Optional: redirect if already logged in
+auth.onAuthStateChanged(user => {
+  if(user){
+    window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
+  }
+});
+</script>
 </body>
 </html>
