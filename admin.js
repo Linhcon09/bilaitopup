@@ -47,42 +47,42 @@ async function loadUsers() {
   table.innerHTML = `<tr><th>Email/UID</th><th>Balance</th><th>Action</th></tr>`;
 
   try {
-    // Try to load from users collection
     const snapshot = await db.collection("users").get();
-    snapshot.forEach(doc => {
-      const u = doc.data();
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${u.email || doc.id}</td>
-        <td>${u.balance || 0} TK</td>
-        <td>
-          <button onclick="changeBalance('${doc.id}', 10)">+10</button>
-          <button onclick="changeBalance('${doc.id}', -10)">-10</button>
-          <button onclick="customBalance('${doc.id}')">Set</button>
-        </td>
-      `;
-      table.appendChild(tr);
-    });
-  } catch (err) {
-    console.warn("Cannot load from users collection, trying fallback...", err);
-    // Fallback: collect users from orders
-    const usersSet = new Set();
-    const ordersSnapshot = await db.collection("orders").get();
-    ordersSnapshot.forEach(doc => usersSet.add(doc.data().uid));
-    const depositsSnapshot = await db.collection("deposits").get();
-    depositsSnapshot.forEach(doc => usersSet.add(doc.data().uid));
+    if (!snapshot.empty) {
+      snapshot.forEach(doc => {
+        const u = doc.data();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${u.email || doc.id}</td>
+          <td>${u.balance || 0} TK</td>
+          <td>
+            <button onclick="changeBalance('${doc.id}', 10)">+10</button>
+            <button onclick="changeBalance('${doc.id}', -10)">-10</button>
+            <button onclick="customBalance('${doc.id}')">Set</button>
+          </td>
+        `;
+        table.appendChild(tr);
+      });
+    } else {
+      // Fallback: gather users from orders and deposits
+      const usersSet = new Set();
+      const ordersSnapshot = await db.collection("orders").get();
+      ordersSnapshot.forEach(doc => usersSet.add(doc.data().uid));
+      const depositsSnapshot = await db.collection("deposits").get();
+      depositsSnapshot.forEach(doc => usersSet.add(doc.data().uid));
 
-    usersSet.forEach(uid => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${uid}</td>
-        <td>-</td>
-        <td>
-          <button onclick="promptChangeBalance('${uid}')">Set Balance</button>
-        </td>
-      `;
-      table.appendChild(tr);
-    });
+      usersSet.forEach(uid => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${uid}</td>
+          <td>-</td>
+          <td><button onclick="promptChangeBalance('${uid}')">Set Balance</button></td>
+        `;
+        table.appendChild(tr);
+      });
+    }
+  } catch (err) {
+    console.error("Load users error:", err);
   }
 }
 
@@ -93,13 +93,13 @@ async function changeBalance(uid, amount) {
     await db.runTransaction(async t => {
       const doc = await t.get(ref);
       const newBal = (doc.data()?.balance || 0) + amount;
-      t.update(ref, { balance: newBal });
+      t.set(ref, { balance: newBal }, { merge: true });
     });
     alert("✅ Balance updated!");
     loadUsers();
   } catch (err) {
     console.error("Change balance error:", err);
-    alert("❌ Cannot change balance. Check if user exists in 'users' collection.");
+    alert("❌ Cannot change balance.");
   }
 }
 
@@ -113,14 +113,14 @@ async function customBalance(uid) {
       loadUsers();
     } catch (err) {
       console.error("Custom balance error:", err);
-      alert("❌ Cannot set balance. User may not exist.");
+      alert("❌ Cannot set balance.");
     }
   } else {
     alert("❌ Invalid number!");
   }
 }
 
-// Prompt to create user for fallback
+// Fallback for unknown users
 function promptChangeBalance(uid) {
   const val = prompt(`Set balance for user ${uid}:`);
   if (val !== null && !isNaN(val)) {
@@ -163,8 +163,12 @@ async function updateOrder(orderId, status, uid=null, price=0) {
   try {
     await db.collection("orders").doc(orderId).update({ status });
     if (status === "Complete" && uid) {
-      // Update balance safely
-      await db.collection("users").doc(uid).set({ balance: price }, { merge: true });
+      const ref = db.collection("users").doc(uid);
+      await db.runTransaction(async t => {
+        const doc = await t.get(ref);
+        const newBal = (doc.data()?.balance || 0) + Number(price);
+        t.set(ref, { balance: newBal }, { merge: true });
+      });
     }
     alert(`✅ Order ${status}`);
     loadOrders();
@@ -207,7 +211,12 @@ async function updateDeposit(depositId, status, uid=null, amount=0) {
   try {
     await db.collection("deposits").doc(depositId).update({ status });
     if (status === "Complete" && uid) {
-      await db.collection("users").doc(uid).set({ balance: amount }, { merge: true });
+      const ref = db.collection("users").doc(uid);
+      await db.runTransaction(async t => {
+        const doc = await t.get(ref);
+        const newBal = (doc.data()?.balance || 0) + Number(amount);
+        t.set(ref, { balance: newBal }, { merge: true });
+      });
     }
     alert(`✅ Deposit ${status}`);
     loadDeposits();
