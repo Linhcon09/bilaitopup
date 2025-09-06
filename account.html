@@ -2,32 +2,330 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<title>আমার একাউন্ট</title>
+<title>আমার একাউন্ট - BilaiTopUp</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
+
+<!-- Firebase Compat -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+
+<style>
+body { 
+  font-family: 'Poppins', sans-serif; 
+  background: linear-gradient(135deg, #1f1c2c, #928dab); 
+  color: #fff; 
+  margin: 0; 
+  padding: 0; 
+  min-height: 100vh;
+}
+
+header {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 15px 20px; 
+  background: rgba(0,0,0,0.4); 
+  backdrop-filter: blur(8px);
+}
+
+header a, .logout-btn {
+  color: #fff; 
+  margin-left: 15px; 
+  text-decoration: none; 
+  font-weight: 500; 
+  padding: 6px 12px; 
+  border-radius: 6px; 
+  transition: 0.3s;
+}
+
+header a:hover, .logout-btn:hover { background: rgba(255,255,255,0.15); }
+
+.logout-btn { background: #ff4757; border: none; cursor: pointer; }
+
+main { 
+  max-width: 1000px; 
+  margin: 20px auto; 
+  padding: 0 15px; 
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255,255,255,0.12);
+  padding: 15px 20px;
+  border-radius: 15px;
+  margin-bottom: 25px;
+  backdrop-filter: blur(8px);
+}
+
+.profile img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+.profile-info h2, .profile-info p {
+  margin: 2px 0;
+}
+
+.wallet-card {
+  background: rgba(255,255,255,0.12);
+  padding: 20px; 
+  border-radius: 15px; 
+  margin-bottom: 30px; 
+  text-align: center;
+  font-size: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.deposit-section {
+  background: rgba(255,255,255,0.12);
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.deposit-section input, .deposit-section button {
+  padding: 10px;
+  margin: 8px 5px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}
+
+.deposit-section button {
+  background: #2ed573;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.deposit-section button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+table {
+  width: 100%; 
+  border-collapse: collapse; 
+  margin-bottom: 30px;
+}
+
+table th, table td {
+  border: 1px solid rgba(255,255,255,0.3); 
+  padding: 10px; 
+  text-align: center;
+}
+
+table th {
+  background: rgba(255,255,255,0.2);
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status.pending { background: #ffa502; color: #000; }
+.status.complete { background: #2ed573; }
+.status.rejected { background: #ff4757; }
+
+#searchOrder {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  margin: 10px auto 20px auto;
+  display: block;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}
+
+@media(max-width:600px){
+  .wallet-card { font-size: 18px; padding: 15px; }
+  table th, table td { font-size: 14px; padding: 8px; }
+  #searchOrder { font-size: 14px; }
+  .profile img { width: 50px; height: 50px; }
+}
+</style>
 </head>
 <body>
 <header>
-  <a href="https://tahmid1dev.github.io/bilaitopup/">Home</a>
-  <a href="faq.html">FAQ</a>
-  <a href="privacy.html">Privacy Policy</a>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="faq.html">FAQ</a>
+    <a href="privacy.html">Privacy Policy</a>
+  </div>
+  <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
 </header>
 
 <main>
-<h1>আমার ওয়ালেট</h1>
-<p>ব্যালান্স: <span id="walletBalance">0</span> TK</p>
+  <!-- Profile -->
+  <div class="profile">
+    <img id="profilePic" src="" alt="Profile">
+    <div class="profile-info">
+      <h2 id="profileName"></h2>
+      <p id="profileEmail"></p>
+    </div>
+  </div>
 
-<h2>Deposit History</h2>
-<table id="depositHistory"></table>
+  <!-- Wallet -->
+  <div class="wallet-card">
+    <h1>আমার ওয়ালেট</h1>
+    <p>ব্যালান্স: <span id="walletBalance">0</span> TK</p>
+  </div>
 
-<h2>Order History</h2>
-<input type="text" id="searchOrder" placeholder="Search Order">
-<table id="orderHistory"></table>
+  <!-- Deposit -->
+  <div class="deposit-section">
+    <h2>Deposit Submit</h2>
+    <input type="text" id="depositAmount" placeholder="Amount (TK)">
+    <input type="text" id="depositTid" placeholder="Transaction ID">
+    <button id="submitDepositBtn">Submit Deposit</button>
+  </div>
+
+  <!-- Deposit History -->
+  <h2>Deposit History</h2>
+  <table id="depositHistory">
+    <tr><th>Amount</th><th>Status</th><th>Date</th></tr>
+  </table>
+
+  <!-- Order History -->
+  <h2>Order History</h2>
+  <input type="text" id="searchOrder" placeholder="Search Order">
+  <table id="orderHistory">
+    <tr><th>Package</th><th>Price</th><th>TID</th><th>Status</th><th>Date</th></tr>
+  </table>
 </main>
 
-<script src="main.js"></script>
+<script>
+// Firebase references
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Force login
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    // Profile info
+    document.getElementById("profilePic").src = user.photoURL;
+    document.getElementById("profileName").innerText = user.displayName;
+    document.getElementById("profileEmail").innerText = user.email;
+
+    // Load data
+    loadWallet(user.uid);
+    loadDepositHistory(user.uid);
+    loadOrders(user.uid);
+  }
+});
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  auth.signOut().then(() => {
+    window.location.href = "login.html";
+  });
+});
+
+// Wallet
+async function loadWallet(uid) {
+  const walletSpan = document.getElementById("walletBalance");
+  try {
+    const res = await db.collection("users").doc(uid).get();
+    walletSpan.innerText = res.exists ? (res.data().balance || 0) : 0;
+  } catch(e){
+    console.error(e);
+    walletSpan.innerText = "0";
+  }
+}
+
+// Deposit submit
+document.getElementById("submitDepositBtn").addEventListener("click", async ()=>{
+  const amount = document.getElementById("depositAmount").value;
+  const tid = document.getElementById("depositTid").value;
+  const user = auth.currentUser;
+  if(!user) return alert("Login required!");
+  if(!amount || !tid) return alert("Amount & Transaction ID required!");
+
+  await db.collection("deposits").add({
+    uid: user.uid,
+    amount: Number(amount),
+    transactionId: tid,
+    status: "Pending",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  alert("✅ Deposit submitted! Status: Pending");
+  document.getElementById("depositAmount").value="";
+  document.getElementById("depositTid").value="";
+  loadDepositHistory(user.uid);
+});
+
+// Deposit history
+async function loadDepositHistory(uid){
+  const table = document.getElementById("depositHistory");
+  table.innerHTML = `<tr><th>Amount</th><th>Status</th><th>Date</th></tr>`;
+  try{
+    const snapshot = await db.collection("deposits")
+      .where("uid","==",uid)
+      .orderBy("createdAt","desc")
+      .get();
+    
+    snapshot.forEach(doc=>{
+      const d = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.amount || "-"}</td>
+        <td><span class="status ${d.status.toLowerCase()}">${d.status}</span></td>
+        <td>${d.createdAt?.toDate().toLocaleString() || "-"}</td>
+      `;
+      table.appendChild(tr);
+    });
+  }catch(e){console.error(e);}
+}
+
+// Orders
+async function loadOrders(uid){
+  const table = document.getElementById("orderHistory");
+  table.innerHTML = `<tr><th>Package</th><th>Price</th><th>TID</th><th>Status</th><th>Date</th></tr>`;
+  try{
+    const snapshot = await db.collection("orders")
+      .where("uid","==",uid)
+      .orderBy("createdAt","desc")
+      .get();
+    
+    snapshot.forEach(doc=>{
+      const d = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.packageName || "-"}</td>
+        <td>${d.price || "-"}</td>
+        <td>${d.transactionId || "-"}</td>
+        <td><span class="status ${d.status.toLowerCase()}">${d.status}</span></td>
+        <td>${d.createdAt?.toDate().toLocaleString() || "-"}</td>
+      `;
+      table.appendChild(tr);
+    });
+  }catch(e){console.error(e);}
+}
+
+// Search/filter orders
+const searchInput = document.getElementById("searchOrder");
+searchInput?.addEventListener("input", () => {
+  const filter = searchInput.value.toLowerCase();
+  document.querySelectorAll("#orderHistory tr:not(:first-child)").forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(filter) ? "" : "none";
+  });
+});
+</script>
 </body>
 </html>
