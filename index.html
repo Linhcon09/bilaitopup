@@ -1,42 +1,66 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<title>BilaiTopUp: Free Fire Diamond Top Up Website for Bangladesh</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+  <meta charset="UTF-8">
+  <title>BilaiTopUp: Free Fire Diamond Top Up Website for Bangladesh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
 </head>
 <body>
-<header>
-  <img src="logo.png" alt="Logo" class="logo">
-  <a href="account.html">আমার একাউন্ট</a>
-  <a href="faq.html">FAQ</a>
-  <a href="privacy.html">Privacy Policy</a>
-  <a href="https://wa.me/01963178893" target="_blank">Support</a>
-</header>
+  <!-- Header -->
+  <header class="header">
+    <div class="nav-left">
+      <img src="logo.png" alt="Logo" class="logo">
+      <span class="brand">BilaiTopUp</span>
+    </div>
+    <nav class="nav-right">
+      <a href="account.html">আমার একাউন্ট</a>
+      <a href="faq.html">FAQ</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="https://wa.me/01963178893" target="_blank">💬 Support</a>
+      <button onclick="logout()" class="logout-btn">🚪 Logout</button>
+    </nav>
+  </header>
 
-<main>
-<h1>ডায়মন্ড প্যাকেজ</h1>
-<div id="packages"></div>
+  <!-- Main Content -->
+  <main class="container">
+    <section class="packages-section">
+      <h1>💎 ডায়মন্ড প্যাকেজ</h1>
+      <div id="packages" class="packages-grid"></div>
+    </section>
 
-<h2>Payment Instructions</h2>
-<p>
-*247# ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।<br>
-"Send Money" -এ ক্লিক করুন।<br>
-প্রাপক নম্বর: 01829865733<br>
-টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী টাকার পরিমাণ)<br>
-নিশ্চিত করতে পিন লিখুন।<br>
-সবকিছু ঠিক থাকলে bKash থেকে একটি কনফার্মেশন বার্তা পাবেন।<br>
-উপরের বক্সে Transaction ID দিন এবং VERIFY বাটনে ক্লিক করুন।
-</p>
+    <section class="payment-section">
+      <h2>📲 Payment Instructions</h2>
+      <div class="instructions">
+        <p>*247# ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।</p>
+        <p>"Send Money" -এ ক্লিক করুন।</p>
+        <p>প্রাপক নম্বর: <strong id="bkashNumber">01829865733</strong></p>
+        <p>টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী টাকার পরিমাণ)</p>
+        <p>নিশ্চিত করতে আপনার পিন লিখুন।</p>
+        <p>সবকিছু ঠিক থাকলে bKash থেকে একটি কনফার্মেশন বার্তা পাবেন।</p>
+        <p>এখন নিচের বক্সে Transaction ID দিন এবং VERIFY করুন।</p>
+      </div>
+      <div class="verify-box">
+        <input type="text" id="transactionId" placeholder="Transaction ID লিখুন">
+        <button id="verifyBtn" class="verify-btn">✅ VERIFY</button>
+      </div>
+    </section>
+  </main>
 
-<input type="text" id="transactionId" placeholder="Transaction ID">
-<button id="verifyBtn">VERIFY</button>
-</main>
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 BilaiTopUp | সর্বস্বত্ব সংরক্ষিত</p>
+  </footer>
 
-<script src="main.js"></script>
+  <!-- Scripts -->
+  <script src="main.js"></script>
 </body>
-</html>
+  </html>
