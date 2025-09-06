@@ -48,7 +48,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
 </head>
 
 <body>
@@ -58,40 +57,54 @@
 </div>
 
 <script>
-const auth = firebase.auth();
-const db = firebase.firestore();
+  // ------------------- Firebase Init -------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyCSC-6WM5sUi5mMrw4DlO4-9_aFa7fX0Z8",
+    authDomain: "bilai-top-up.firebaseapp.com",
+    projectId: "bilai-top-up",
+    storageBucket: "bilai-top-up.appspot.com",
+    messagingSenderId: "576723443646",
+    appId: "1:576723443646:web:cb0aea65da0a79a21163ef",
+    measurementId: "G-D226N8W6NV"
+  };
 
-document.getElementById("googleLoginBtn").addEventListener("click", async () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  try {
-    const result = await auth.signInWithPopup(provider);
-    const user = result.user;
+  firebase.initializeApp(firebaseConfig);
 
-    // Check if user exists in 'users' collection, if not create
-    const userRef = db.collection("users").doc(user.uid);
-    const doc = await userRef.get();
-    if(!doc.exists){
-      await userRef.set({
-        email: user.email,
-        balance: 0,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // ------------------- Google Login -------------------
+  document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      const result = await auth.signInWithPopup(provider);
+      const user = result.user;
+
+      // Check if user exists in 'users' collection, if not create
+      const userRef = db.collection("users").doc(user.uid);
+      const doc = await userRef.get();
+      if (!doc.exists) {
+        await userRef.set({
+          email: user.email,
+          balance: 0,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+
+      // Redirect after login
+      window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Login failed: " + err.message);
     }
+  });
 
-    // Redirect after successful login
-    window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
-  } catch(err) {
-    console.error("Login error:", err);
-    alert("Login failed: " + err.message);
-  }
-});
-
-// Optional: redirect if already logged in
-auth.onAuthStateChanged(user => {
-  if(user){
-    window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
-  }
-});
+  // ------------------- Auto redirect if already logged in -------------------
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      window.location.href = "https://tahmid1dev.github.io/bilaitopup/";
+    }
+  });
 </script>
 </body>
 </html>
