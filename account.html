@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>আমার একাউন্ট - BilaiTopUp</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 <!-- Firebase Compat -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -12,38 +12,68 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <style>
-body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #1f1c2c, #928dab); color: #fff; margin:0; padding:0; min-height:100vh; }
-header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); }
-header a, .logout-btn { color:#fff; margin-left:15px; text-decoration:none; font-weight:500; padding:6px 12px; border-radius:6px; transition:0.3s; }
+body { 
+  font-family: 'Poppins', sans-serif; 
+  background: linear-gradient(135deg, #1f1c2c, #928dab); 
+  color: #fff; margin:0; padding:0; min-height:100vh; 
+}
+header { 
+  display:flex; justify-content:space-between; align-items:center; 
+  padding:15px 20px; background: rgba(0,0,0,0.5); 
+  backdrop-filter: blur(8px); position:sticky; top:0; z-index:10;
+}
+header a, .logout-btn { 
+  color:#fff; margin-left:15px; text-decoration:none; font-weight:500; 
+  padding:6px 12px; border-radius:6px; transition:0.3s; 
+}
 header a:hover, .logout-btn:hover { background: rgba(255,255,255,0.15); }
 .logout-btn { background:#ff4757; border:none; cursor:pointer; }
 main { max-width:1000px; margin:20px auto; padding:0 15px; }
-.profile { display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.12); padding:15px 20px; border-radius:15px; margin-bottom:25px; backdrop-filter: blur(8px); }
+.profile { 
+  display:flex; align-items:center; gap:15px; 
+  background: rgba(255,255,255,0.12); padding:15px 20px; 
+  border-radius:15px; margin-bottom:25px; backdrop-filter: blur(8px); 
+}
 .profile img { width:60px; height:60px; border-radius:50%; border:2px solid #fff; }
-.profile-info h2, .profile-info p { margin:2px 0; }
-.wallet-card { background: rgba(255,255,255,0.12); padding:20px; border-radius:15px; margin-bottom:30px; text-align:center; font-size:20px; backdrop-filter: blur(8px); }
-.deposit-section { background: rgba(255,255,255,0.12); padding:15px; border-radius:15px; margin-bottom:30px; text-align:center; backdrop-filter: blur(8px); }
-.deposit-section input, .deposit-section button { padding:10px; margin:8px 5px; border-radius:8px; border:none; font-size:16px; }
-.deposit-section button { background:#2ed573; color:#000; font-weight:600; cursor:pointer; transition:0.3s; }
+.wallet-card, .deposit-section { 
+  background: rgba(255,255,255,0.12); padding:20px; 
+  border-radius:15px; margin-bottom:30px; text-align:center; 
+  backdrop-filter: blur(8px); 
+}
+.wallet-card h1 { font-size:22px; margin-bottom:10px; }
+.wallet-card p { font-size:20px; }
+.deposit-section input, .deposit-section button { 
+  padding:10px; margin:8px 5px; border-radius:8px; border:none; font-size:15px; 
+}
+.deposit-section button { 
+  background:#2ed573; color:#000; font-weight:600; cursor:pointer; 
+  transition:0.3s; 
+}
 .deposit-section button:hover { transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,0.2); }
 table { width:100%; border-collapse:collapse; margin-bottom:30px; }
-table th, table td { border:1px solid rgba(255,255,255,0.3); padding:10px; text-align:center; }
+table th, table td { border:1px solid rgba(255,255,255,0.3); padding:10px; text-align:center; font-size:14px; }
 table th { background: rgba(255,255,255,0.2); }
 .status { padding:5px 10px; border-radius:8px; font-weight:600; text-transform:capitalize; }
 .status.pending { background:#ffa502; color:#000; }
 .status.complete { background:#2ed573; }
 .status.rejected { background:#ff4757; }
 #searchOrder { width:100%; max-width:400px; padding:10px; margin:10px auto 20px auto; display:block; border-radius:8px; border:none; font-size:16px; }
-@media(max-width:600px){ .wallet-card{font-size:18px;padding:15px;} table th,table td{font-size:14px;padding:8px;} #searchOrder{font-size:14px;} .profile img{width:50px;height:50px;} }
+.empty-msg { text-align:center; color:#ccc; font-style:italic; margin:10px 0; }
+@media(max-width:600px){
+  .wallet-card{font-size:18px;padding:15px;}
+  table th,table td{font-size:13px;padding:8px;}
+  #searchOrder{font-size:14px;}
+  .profile img{width:50px;height:50px;}
+}
 </style>
 </head>
 <body>
 
 <header>
   <div>
-    <a href="index.html">Home</a>
-    <a href="faq.html">FAQ</a>
-    <a href="privacy.html">Privacy Policy</a>
+    <a href="index.html">🏠 Home</a>
+    <a href="faq.html">❓ FAQ</a>
+    <a href="privacy.html">🔒 Privacy</a>
   </div>
   <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
 </header>
@@ -63,26 +93,28 @@ table th { background: rgba(255,255,255,0.2); }
   </div>
 
   <div class="deposit-section">
-    <h2>Deposit Submit</h2>
-    <input type="text" id="depositAmount" placeholder="Amount (TK)">
+    <h2>💳 Deposit Submit</h2>
+    <input type="number" id="depositAmount" placeholder="Amount (TK)">
     <input type="text" id="depositTid" placeholder="Transaction ID">
-    <button id="submitDepositBtn">Submit Deposit</button>
+    <button id="submitDepositBtn">Submit</button>
   </div>
 
-  <h2>Deposit History</h2>
+  <h2>📜 Deposit History</h2>
   <table id="depositHistory">
     <tr><th>Amount</th><th>Status</th><th>Date</th></tr>
   </table>
+  <p id="noDeposits" class="empty-msg" style="display:none;">No deposits yet.</p>
 
-  <h2>Order History</h2>
-  <input type="text" id="searchOrder" placeholder="Search Order">
+  <h2>📦 Order History</h2>
+  <input type="text" id="searchOrder" placeholder="Search Orders...">
   <table id="orderHistory">
     <tr><th>Package</th><th>Price</th><th>TID</th><th>Status</th><th>Date</th></tr>
   </table>
+  <p id="noOrders" class="empty-msg" style="display:none;">No orders yet.</p>
 </main>
 
 <script>
-// -------------------- FIREBASE CONFIG --------------------
+// ---------------- FIREBASE CONFIG ----------------
 const firebaseConfig = {
   apiKey: "AIzaSyCSC-6WM5sUi5mMrw4DlO4-9_aFa7fX0Z8",
   authDomain: "bilai-top-up.firebaseapp.com",
@@ -118,17 +150,16 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 
 // Load wallet
 async function loadWallet(uid){
-  const walletSpan = document.getElementById("walletBalance");
   try {
     const res = await db.collection("users").doc(uid).get();
-    walletSpan.innerText = res.exists ? (res.data().balance || 0) : 0;
-  } catch(e){ console.error(e); walletSpan.innerText = "0"; }
+    document.getElementById("walletBalance").innerText = res.exists ? (res.data().balance || 0) : 0;
+  } catch(e){ console.error(e); }
 }
 
 // Deposit submit
 document.getElementById("submitDepositBtn").addEventListener("click", async ()=>{
-  const amount = document.getElementById("depositAmount").value;
-  const tid = document.getElementById("depositTid").value;
+  const amount = document.getElementById("depositAmount").value.trim();
+  const tid = document.getElementById("depositTid").value.trim();
   const user = auth.currentUser;
   if(!user) return alert("Login required!");
   if(!amount || !tid) return alert("Amount & Transaction ID required!");
@@ -150,8 +181,11 @@ document.getElementById("submitDepositBtn").addEventListener("click", async ()=>
 async function loadDepositHistory(uid){
   const table = document.getElementById("depositHistory");
   table.innerHTML = `<tr><th>Amount</th><th>Status</th><th>Date</th></tr>`;
+  const noMsg = document.getElementById("noDeposits");
   try{
     const snapshot = await db.collection("deposits").where("uid","==",uid).orderBy("createdAt","desc").get();
+    if(snapshot.empty){ noMsg.style.display="block"; return; }
+    noMsg.style.display="none";
     snapshot.forEach(doc=>{
       const d = doc.data();
       const tr = document.createElement("tr");
@@ -169,8 +203,11 @@ async function loadDepositHistory(uid){
 async function loadOrders(uid){
   const table = document.getElementById("orderHistory");
   table.innerHTML = `<tr><th>Package</th><th>Price</th><th>TID</th><th>Status</th><th>Date</th></tr>`;
+  const noMsg = document.getElementById("noOrders");
   try{
     const snapshot = await db.collection("orders").where("uid","==",uid).orderBy("createdAt","desc").get();
+    if(snapshot.empty){ noMsg.style.display="block"; return; }
+    noMsg.style.display="none";
     snapshot.forEach(doc=>{
       const d = doc.data();
       const tr = document.createElement("tr");
