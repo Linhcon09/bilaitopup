@@ -36,7 +36,8 @@ auth.onAuthStateChanged(async (user) => {
 
 // -------------------- LOGOUT --------------------
 function logout() {
-  auth.signOut().then(() => window.location.href = "login.html")
+  auth.signOut()
+    .then(() => window.location.href = "login.html")
     .catch(err => console.error("Logout error:", err));
 }
 
@@ -143,15 +144,15 @@ async function loadOrders() {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${o.email || o.uid}</td>
-        <td>${o.ffuid || "-"}</td>
-        <td>${o.mobile || "-"}</td>
+        <td>${o.ffuid || "❌ Not Provided"}</td>
+        <td>${o.mobile || "❌ Not Provided"}</td>
         <td>${o.transactionId || "-"}</td>
         <td>${o.packageName || "-"}</td>
         <td>${o.price || 0} TK</td>
         <td><span class="status ${o.status?.toLowerCase()}">${o.status}</span></td>
         <td>
           ${o.status === "Pending" ? `
-            <button onclick="updateOrder('${doc.id}','Completed','${o.uid}',${o.price})">Approve</button>
+            <button onclick="updateOrder('${doc.id}','Completed')">Approve</button>
             <button onclick="updateOrder('${doc.id}','Rejected')">Reject</button>` : ''}
         </td>
       `;
@@ -162,23 +163,14 @@ async function loadOrders() {
   }
 }
 
-async function updateOrder(orderId, status, uid=null, price=0) {
+async function updateOrder(orderId, status) {
   try {
     await db.collection("orders").doc(orderId).update({ status });
-    if (status === "Completed" && uid) {
-      const ref = db.collection("users").doc(uid);
-      await db.runTransaction(async t => {
-        const doc = await t.get(ref);
-        const newBal = (doc.data()?.balance || 0) + Number(price);
-        t.set(ref, { balance: newBal }, { merge: true });
-      });
-    }
     alert(`✅ Order ${status}`);
     loadOrders();
-    loadUsers();
   } catch (err) {
     console.error(err);
-    alert("❌ Cannot update order balance.");
+    alert("❌ Cannot update order.");
   }
 }
 
@@ -240,4 +232,4 @@ if (searchInput) {
       row.style.display = row.textContent.toLowerCase().includes(val) ? "" : "none";
     });
   });
-        }
+ }
