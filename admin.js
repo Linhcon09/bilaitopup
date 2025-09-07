@@ -144,8 +144,8 @@ async function loadOrders() {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${o.email || o.uid}</td>
-        <td>${o.ffuid || "❌ Not Provided"}</td>
-        <td>${o.mobile || "❌ Not Provided"}</td>
+        <td>${o.ffUid || "❌ Not Provided"}</td>
+        <td>${o.mobileNumber || "❌ Not Provided"}</td>
         <td>${o.transactionId || "-"}</td>
         <td>${o.packageName || "-"}</td>
         <td>${o.price || 0} TK</td>
