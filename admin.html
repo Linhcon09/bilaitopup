@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Admin Panel - BilaiTopUp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
 
   <!-- Firebase Compat -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -12,24 +11,54 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
   <style>
-    body { font-family: 'Poppins', sans-serif; margin:0; padding:0; background:#1f1c2c; color:#fff; min-height:100vh; }
-    header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:rgba(0,0,0,0.4); backdrop-filter:blur(8px); }
-    header h1 { margin:0; font-size:20px; }
-    header button { background:#ff4757; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:600; }
-    main { max-width:1200px; margin:20px auto; padding:0 15px; }
-    section { margin-bottom:40px; }
-    h2 { margin-bottom:10px; }
-    table { width:100%; border-collapse:collapse; margin-bottom:20px; }
-    table th, table td { border:1px solid rgba(255,255,255,0.2); padding:10px; text-align:center; font-size:14px; }
-    table th { background:rgba(255,255,255,0.1); }
-    button.action-btn { padding:5px 10px; margin:2px; border:none; border-radius:6px; cursor:pointer; font-weight:600; }
-    button.approve { background:#2ed573; color:#000; }
-    button.reject { background:#ff4757; }
-    button.plus { background:#2ed573; color:#000; }
-    button.minus { background:#ffa502; color:#000; }
-    button.set { background:#1e90ff; }
-    input.search { padding:8px 12px; margin-bottom:10px; border-radius:8px; border:none; width:100%; max-width:300px; font-size:14px; }
-    @media(max-width:700px){ table th, table td{font-size:12px; padding:6px;} header h1{font-size:16px;} }
+    /* Global */
+    body { font-family: 'Poppins', sans-serif; margin:0; padding:0; background:#111; color:#f1f1f1; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:#1e1e1e; border-bottom:1px solid #333; position:sticky; top:0; z-index:100; }
+    header h1 { margin:0; font-size:20px; font-weight:600; }
+    header button { background:linear-gradient(135deg,#ff4757,#e84118); border:none; padding:8px 16px; border-radius:10px; cursor:pointer; font-weight:600; color:#fff; transition:0.3s; }
+    header button:hover { opacity:0.8; }
+
+    main { max-width:1300px; margin:20px auto; padding:0 15px; }
+
+    /* Sections */
+    section { margin-bottom:50px; }
+    h2 { margin-bottom:15px; font-size:20px; font-weight:600; border-left:4px solid #ff4757; padding-left:10px; }
+
+    /* Tables */
+    .table-wrapper { overflow-x:auto; border-radius:12px; box-shadow:0 0 20px rgba(0,0,0,0.5); }
+    table { width:100%; border-collapse:collapse; min-width:800px; }
+    table th, table td { padding:12px; text-align:center; font-size:14px; }
+    table th { background:#222; position:sticky; top:0; z-index:1; text-transform:uppercase; letter-spacing:0.5px; }
+    table tr:nth-child(even) { background:#1a1a1a; }
+    table tr:nth-child(odd) { background:#141414; }
+    table tr:hover { background:#2d2d2d; }
+
+    /* Buttons */
+    .action-btn { padding:6px 12px; margin:3px; border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:13px; transition:0.3s; }
+    .approve { background:linear-gradient(135deg,#2ed573,#1eae98); color:#000; }
+    .approve:hover { filter:brightness(1.1); }
+    .reject { background:linear-gradient(135deg,#ff4757,#d63031); color:#fff; }
+    .reject:hover { filter:brightness(1.1); }
+    .plus { background:#2ed573; color:#000; }
+    .minus { background:#ffa502; color:#000; }
+    .set { background:#1e90ff; color:#fff; }
+
+    /* Status badges */
+    .status { padding:4px 8px; border-radius:8px; font-size:12px; font-weight:600; display:inline-block; }
+    .status.pending { background:#f39c12; color:#000; }
+    .status.completed { background:#2ecc71; color:#fff; }
+    .status.rejected { background:#e74c3c; color:#fff; }
+
+    /* Search */
+    input.search { padding:10px 14px; margin-bottom:15px; border-radius:10px; border:none; width:100%; max-width:350px; font-size:14px; background:#1e1e1e; color:#fff; outline:none; }
+    input.search:focus { border:1px solid #ff4757; }
+
+    /* Responsive */
+    @media(max-width:768px){
+      header h1{font-size:16px;}
+      table th, table td{font-size:12px; padding:8px;}
+      .action-btn{font-size:11px; padding:5px 8px;}
+    }
   </style>
 </head>
 <body>
@@ -42,39 +71,45 @@
     <!-- Users -->
     <section>
       <h2>👥 Users</h2>
-      <table id="usersTable">
-        <tr><th>Email/UID</th><th>Balance</th><th>Action</th></tr>
-      </table>
+      <div class="table-wrapper">
+        <table id="usersTable">
+          <tr><th>Email/UID</th><th>Balance</th><th>Action</th></tr>
+        </table>
+      </div>
     </section>
 
     <!-- Orders -->
     <section>
       <h2>📦 Orders</h2>
       <input type="text" id="searchOrder" class="search" placeholder="Search by Txn ID, UID or Mobile">
-      <table id="ordersTable">
-        <tr>
-          <th>Txn ID</th>
-          <th>User</th>
-          <th>FF UID</th>
-          <th>Mobile</th>
-          <th>Package</th>
-          <th>Price</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </table>
+      <div class="table-wrapper">
+        <table id="ordersTable">
+          <tr>
+            <th>Txn ID</th>
+            <th>User</th>
+            <th>FF UID</th>
+            <th>Mobile</th>
+            <th>Package</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </table>
+      </div>
     </section>
 
     <!-- Deposits -->
     <section>
       <h2>💳 Deposits</h2>
-      <table id="depositsTable">
-        <tr><th>User</th><th>Amount</th><th>Transaction ID</th><th>Status</th><th>Action</th></tr>
-      </table>
+      <div class="table-wrapper">
+        <table id="depositsTable">
+          <tr><th>User</th><th>Amount</th><th>Transaction ID</th><th>Status</th><th>Action</th></tr>
+        </table>
+      </div>
     </section>
   </main>
 
   <!-- External JS -->
   <script src="admin.js"></script>
 </body>
- </html>
+</html>
