@@ -197,40 +197,51 @@
 
     // Verify & submit order
     document.getElementById("verifyBtn").addEventListener("click", async () => {
-      const user = auth.currentUser;
-      const ffUid = document.getElementById("ffUid").value.trim();
-      const mobileNumber = document.getElementById("mobileNumber").value.trim();
-      const transactionId = document.getElementById("transactionId").value.trim();
+  const user = auth.currentUser;
+  const ffUid = document.getElementById("ffUid").value.trim();
+  const mobileNumber = document.getElementById("mobileNumber").value.trim();
+  const transactionId = document.getElementById("transactionId").value.trim();
 
-      if (!user) return alert("প্রথমে লগইন করুন!");
-      if (!selectedPackage) return alert("একটি প্যাকেজ নির্বাচন করুন!");
-      if (!ffUid || !mobileNumber || !transactionId) return alert("সব ফিল্ড পূরণ করুন!");
-      if (isNaN(ffUid) || isNaN(mobileNumber)) return alert("Free Fire UID এবং Mobile Number অবশ্যই সংখ্যা হতে হবে!");
+  if (!user) return alert("প্রথমে লগইন করুন!");
+  if (!selectedPackage) return alert("একটি প্যাকেজ নির্বাচন করুন!");
+  if (!ffUid || !mobileNumber || !transactionId) return alert("সব ফিল্ড পূরণ করুন!");
 
-      try {
-        await db.collection("orders").add({
-          uid: user.uid,
-          ffUid: Number(ffUid),
-          mobileNumber: Number(mobileNumber),
-          packageName: selectedPackage.name,
-          price: selectedPackage.price,
-          transactionId,
-          status: "Pending",
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert("✅ অর্ডার সাবমিট হয়েছে! Status: Pending");
-        // Reset form
-        document.getElementById("ffUid").value = "";
-        document.getElementById("mobileNumber").value = "";
-        document.getElementById("transactionId").value = "";
-        document.getElementById("selectedPrice").textContent = "Select a package";
-        selectedPackage = null;
-        document.querySelectorAll(".package-card").forEach(c => c.classList.remove("selected"));
-      } catch (err) {
-        console.error("Order failed:", err);
-        alert("অর্ডার সাবমিট করতে ব্যর্থ!");
-      }
+  if (isNaN(ffUid) || ffUid.length > 12) return alert("Free Fire UID অবশ্যই সংখ্যা এবং সর্বোচ্চ 12 সংখ্যা হতে হবে!");
+  if (isNaN(mobileNumber) || mobileNumber.length > 11) return alert("Mobile Number অবশ্যই সংখ্যা এবং সর্বোচ্চ 11 সংখ্যা হতে হবে!");
+  if (transactionId.length > 15) return alert("Transaction ID সর্বোচ্চ 15 অক্ষর হতে পারবে!");
+
+  const loader = document.getElementById("loader");
+  loader.style.display = "block";
+
+  try {
+    await db.collection("orders").add({
+      uid: user.uid,
+      ffUid: Number(ffUid),
+      mobileNumber: Number(mobileNumber),
+      packageName: selectedPackage.name,
+      price: selectedPackage.price,
+      transactionId,
+      status: "Pending",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+
+    alert("✅ অর্ডার সাবমিট হয়েছে! Status: Pending");
+
+    // Reset form
+    document.getElementById("ffUid").value = "";
+    document.getElementById("mobileNumber").value = "";
+    document.getElementById("transactionId").value = "";
+    document.getElementById("selectedPrice").textContent = "Select a package";
+    selectedPackage = null;
+    document.querySelectorAll(".package-card").forEach(c => c.classList.remove("selected"));
+
+  } catch (err) {
+    console.error("Order failed:", err);
+    alert("অর্ডার সাবমিট করতে ব্যর্থ!");
+  } finally {
+    loader.style.display = "none";
+  }
+});
 
     // Logout function
     window.logout = () => {
