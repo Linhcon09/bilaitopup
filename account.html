@@ -22,33 +22,19 @@ header {
   padding:15px 20px; background: rgba(0,0,0,0.5); 
   backdrop-filter: blur(8px); position:sticky; top:0; z-index:10;
 }
-header a, .logout-btn { 
-  color:#fff; margin-left:15px; text-decoration:none; font-weight:500; 
-  padding:6px 12px; border-radius:6px; transition:0.3s; 
-}
-header a:hover, .logout-btn:hover { background: rgba(255,255,255,0.15); }
-.logout-btn { background:#ff4757; border:none; cursor:pointer; }
+header .menu-btn { background:none; border:none; font-size:26px; color:#fff; cursor:pointer; }
+.menu-box { display:none; position:absolute; top:60px; right:20px; background:#2c2c54; border-radius:10px; padding:10px; box-shadow:0 5px 15px rgba(0,0,0,0.4); z-index:999; }
+.menu-box a, .menu-box button { display:block; width:100%; padding:10px; text-align:left; border:none; background:none; color:#fff; font-weight:600; text-decoration:none; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.1); }
+.menu-box a:hover, .menu-box button:hover { background:rgba(255,255,255,0.1); }
+.menu-box button.logout-btn { color:#ff4d4d; font-weight:700; }
 main { max-width:1000px; margin:20px auto; padding:0 15px; }
-.profile { 
-  display:flex; align-items:center; gap:15px; 
-  background: rgba(255,255,255,0.12); padding:15px 20px; 
-  border-radius:15px; margin-bottom:25px; backdrop-filter: blur(8px); 
-}
+.profile { display:flex; align-items:center; gap:15px; background: rgba(255,255,255,0.12); padding:15px 20px; border-radius:15px; margin-bottom:25px; backdrop-filter: blur(8px); }
 .profile img { width:60px; height:60px; border-radius:50%; border:2px solid #fff; }
-.wallet-card, .deposit-section { 
-  background: rgba(255,255,255,0.12); padding:20px; 
-  border-radius:15px; margin-bottom:30px; text-align:center; 
-  backdrop-filter: blur(8px); 
-}
+.wallet-card, .deposit-section { background: rgba(255,255,255,0.12); padding:20px; border-radius:15px; margin-bottom:30px; text-align:center; backdrop-filter: blur(8px); }
 .wallet-card h1 { font-size:22px; margin-bottom:10px; }
 .wallet-card p { font-size:20px; }
-.deposit-section input, .deposit-section button { 
-  padding:10px; margin:8px 5px; border-radius:8px; border:none; font-size:15px; 
-}
-.deposit-section button { 
-  background:#2ed573; color:#000; font-weight:600; cursor:pointer; 
-  transition:0.3s; 
-}
+.deposit-section input, .deposit-section button { padding:10px; margin:8px 5px; border-radius:8px; border:none; font-size:15px; }
+.deposit-section button { background:#2ed573; color:#000; font-weight:600; cursor:pointer; transition:0.3s; }
 .deposit-section button:hover { transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,0.2); }
 table { width:100%; border-collapse:collapse; margin-bottom:30px; }
 table th, table td { border:1px solid rgba(255,255,255,0.3); padding:10px; text-align:center; font-size:14px; }
@@ -70,12 +56,16 @@ table th { background: rgba(255,255,255,0.2); }
 <body>
 
 <header>
-  <div>
+  <div>আমার একাউন্ট</div>
+  <button class="menu-btn" id="menuBtn">☰</button>
+  <div class="menu-box" id="menuBox">
     <a href="index.html">🏠 Home</a>
     <a href="faq.html">❓ FAQ</a>
     <a href="privacy.html">🔒 Privacy</a>
+    <a href="terms.html">📜 Terms</a>
+    <a href="https://wa.me/8801963178893" target="_blank" rel="noopener">💬 Support</a>
+    <button onclick="logout()" class="logout-btn">🚪 Logout</button>
   </div>
-  <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
 </header>
 
 <main>
@@ -94,8 +84,8 @@ table th { background: rgba(255,255,255,0.2); }
 
   <div class="deposit-section">
     <h2>💳 Deposit Submit</h2>
-    <input type="number" id="depositAmount" placeholder="Amount (TK)">
-    <input type="text" id="depositTid" placeholder="Transaction ID">
+    <input type="number" id="depositAmount" placeholder="Amount (TK) - 5 to 10,000">
+    <input type="text" id="depositTid" placeholder="Transaction ID (Max 15 chars)" maxlength="15">
     <button id="submitDepositBtn">Submit</button>
   </div>
 
@@ -129,11 +119,17 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Force login
+// ---------------- Menu toggle ----------------
+const menuBtn = document.getElementById("menuBtn");
+const menuBox = document.getElementById("menuBox");
+menuBtn.addEventListener("click", e=>{ e.stopPropagation(); menuBox.style.display = menuBox.style.display==="block"?"none":"block"; });
+document.addEventListener("click", e=>{ if(!menuBox.contains(e.target) && e.target!==menuBtn) menuBox.style.display="none"; });
+menuBox.querySelectorAll("a,button").forEach(el=>el.addEventListener("click", ()=>{ menuBox.style.display="none"; }));
+
+// ---------------- Auth check ----------------
 auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "login.html";
-  } else {
+  if(!user) window.location.href="login.html";
+  else {
     document.getElementById("profilePic").src = user.photoURL || "https://via.placeholder.com/60";
     document.getElementById("profileName").innerText = user.displayName || "Unknown";
     document.getElementById("profileEmail").innerText = user.email || "Unknown";
@@ -143,30 +139,28 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// Logout
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  auth.signOut().then(() => { window.location.href = "login.html"; });
-});
+// ---------------- Logout ----------------
+function logout(){ auth.signOut().then(()=>window.location.href="login.html"); }
 
-// Load wallet
+// ---------------- Load wallet ----------------
 async function loadWallet(uid){
-  try {
-    const res = await db.collection("users").doc(uid).get();
-    document.getElementById("walletBalance").innerText = res.exists ? (res.data().balance || 0) : 0;
-  } catch(e){ console.error(e); }
+  const res = await db.collection("users").doc(uid).get();
+  document.getElementById("walletBalance").innerText = res.exists ? (res.data().balance || 0) : 0;
 }
 
-// Deposit submit
+// ---------------- Deposit submit ----------------
 document.getElementById("submitDepositBtn").addEventListener("click", async ()=>{
-  const amount = document.getElementById("depositAmount").value.trim();
+  const amount = Number(document.getElementById("depositAmount").value.trim());
   const tid = document.getElementById("depositTid").value.trim();
   const user = auth.currentUser;
   if(!user) return alert("Login required!");
   if(!amount || !tid) return alert("Amount & Transaction ID required!");
+  if(amount<5 || amount>10000) return alert("Amount must be between 5 and 10,000 TK!");
+  if(tid.length>20) return alert("Transaction ID cannot exceed 20 characters!");
 
   await db.collection("deposits").add({
     uid: user.uid,
-    amount: Number(amount),
+    amount,
     transactionId: tid,
     status: "Pending",
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -177,16 +171,22 @@ document.getElementById("submitDepositBtn").addEventListener("click", async ()=>
   loadDepositHistory(user.uid);
 });
 
-// Load deposit history
+// ---------------- Load deposit history ----------------
 async function loadDepositHistory(uid){
   const table = document.getElementById("depositHistory");
   table.innerHTML = `<tr><th>Amount</th><th>Status</th><th>Date</th></tr>`;
   const noMsg = document.getElementById("noDeposits");
-  try{
-    const snapshot = await db.collection("deposits").where("uid","==",uid).orderBy("createdAt","desc").get();
-    if(snapshot.empty){ noMsg.style.display="block"; return; }
-    noMsg.style.display="none";
-    snapshot.forEach(doc=>{
+  try {
+    const snapshot = await db.collection("deposits")
+      .where("uid", "==", uid)
+      .orderBy("createdAt", "desc")
+      .get();
+    if(snapshot.empty) {
+      noMsg.style.display = "block";
+      return;
+    }
+    noMsg.style.display = "none";
+    snapshot.forEach(doc => {
       const d = doc.data();
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -196,19 +196,27 @@ async function loadDepositHistory(uid){
       `;
       table.appendChild(tr);
     });
-  }catch(e){console.error(e);}
+  } catch(e) {
+    console.error(e);
+  }
 }
 
-// Load orders
+// ---------------- Load orders ----------------
 async function loadOrders(uid){
   const table = document.getElementById("orderHistory");
   table.innerHTML = `<tr><th>Package</th><th>Price</th><th>TID</th><th>Status</th><th>Date</th></tr>`;
   const noMsg = document.getElementById("noOrders");
-  try{
-    const snapshot = await db.collection("orders").where("uid","==",uid).orderBy("createdAt","desc").get();
-    if(snapshot.empty){ noMsg.style.display="block"; return; }
-    noMsg.style.display="none";
-    snapshot.forEach(doc=>{
+  try {
+    const snapshot = await db.collection("orders")
+      .where("uid", "==", uid)
+      .orderBy("createdAt", "desc")
+      .get();
+    if(snapshot.empty) {
+      noMsg.style.display = "block";
+      return;
+    }
+    noMsg.style.display = "none";
+    snapshot.forEach(doc => {
       const d = doc.data();
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -220,10 +228,12 @@ async function loadOrders(uid){
       `;
       table.appendChild(tr);
     });
-  }catch(e){console.error(e);}
+  } catch(e) {
+    console.error(e);
+  }
 }
 
-// Search/filter orders
+// ---------------- Search/filter orders ----------------
 const searchInput = document.getElementById("searchOrder");
 searchInput?.addEventListener("input", () => {
   const filter = searchInput.value.toLowerCase();
