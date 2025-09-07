@@ -1,300 +1,214 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-<meta charset="UTF-8">
-<title>BilaiTopUp: Free Fire Diamond Top Up Bangladesh | bKash Payment | UID Top Up</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- SEO Meta Tags -->
-<meta name="description" content="BilaiTopUp - বাংলাদেশের বিশ্বস্ত Free Fire Diamond Top Up ওয়েবসাইট। এখানে সহজে bKash দিয়ে ডায়মন্ড কিনুন। নিরাপদ, দ্রুত ও সাশ্রয়ী মূল্যে ডায়মন্ড পাওয়া যাবে।">
-<meta name="keywords" content="Free Fire Diamond Top Up, Free Fire BD Top Up, BilaiTopUp, Diamond Buy Bangladesh, bKash Free Fire Topup, Garena Free Fire Diamond, ফ্রি ফায়ার টপআপ, বাংলাদেশ ডায়মন্ড টপআপ, bkash দিয়ে ডায়মন্ড কিনুন, Uid Top Up, Website, ইউআইডি টপ আপ">
-<meta name="author" content="Tahmid">
+<!DOCTYPE html>  
+<html lang="bn">  
+<head>  
+<meta charset="UTF-8">  
+<title>BilaiTopUp: Free Fire Diamond Top Up Bangladesh | bKash Payment | UID Top Up</title>  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    
+<!-- SEO Meta Tags -->  
+<meta name="description" content="BilaiTopUp - বাংলাদেশের বিশ্বস্ত Free Fire Diamond Top Up ওয়েবসাইট। এখানে সহজে bKash দিয়ে ডায়মন্ড কিনুন। নিরাপদ, দ্রুত ও সাশ্রয়ী মূল্যে ডায়মন্ড পাওয়া যাবে।">  
+<meta name="keywords" content="Free Fire Diamond Top Up, Free Fire BD Top Up, BilaiTopUp, Diamond Buy Bangladesh, bKash Free Fire Topup, Garena Free Fire Diamond, ফ্রি ফায়ার টপআপ, বাংলাদেশ ডায়মন্ড টপআপ, bkash দিয়ে ডায়মন্ড কিনুন, Uid Top Up, Website, ইউআইডি টপ আপ">  
+<meta name="author" content="Tahmid">  
+<meta property="og:title" content="BilaiTopUp - Free Fire Diamond Top Up Bangladesh">  
+<meta property="og:description" content="বাংলাদেশে নিরাপদে bKash দিয়ে Free Fire Diamond কিনুন। BilaiTopUp দিচ্ছে দ্রুত ডেলিভারি ও কম দামে টপআপ।">  
 <meta property="og:image" content="logo.png">  
 <meta property="og:url" content="https://tahmid1dev.github.io/bilaitopup/">  
-
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-<style>
-  body {
-    font-family: 'Poppins', sans-serif;
-    margin:0;
-    background:#1f1c2c;
-    color:#fff;
-    position:relative;
-  }
-  header {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px 20px;
-    background:rgba(0,0,0,0.6);
-    position:relative;
-  }
-  header .logo { height:40px; }
-  header .brand { font-weight:600; margin-left:10px; }
-  .menu-btn {
-    background:none;
-    border:none;
-    font-size:28px;
-    color:#fff;
-    cursor:pointer;
-    transition:0.3s;
-  }
-  .menu-btn:hover { transform:rotate(90deg); }
-  .menu-box {
-    display:none;
-    position:absolute;
-    top:60px;
-    right:20px;
-    background:#2c2c54;
-    border-radius:10px;
-    padding:10px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.4);
-    z-index:999;
-    animation: fadeIn 0.3s ease forwards;
-  }
-  .menu-box a, .menu-box button {
-    display:block;
-    width:100%;
-    padding:10px;
-    text-align:left;
-    border:none;
-    background:none;
-    color:#fff;
-    font-weight:600;
-    text-decoration:none;
-    cursor:pointer;
-    border-bottom:1px solid rgba(255,255,255,0.1);
-    transition:0.2s;
-  }
-  .menu-box a:hover, .menu-box button:hover { background:rgba(255,255,255,0.1); }
-  .menu-box button.logout-btn { color:#ff4d4d; font-weight:700; }
-  main { max-width:800px; margin:20px auto; padding:0 15px; }
-  .packages-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:15px; margin-top:20px; }
-  .package-card { background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:center; cursor:pointer; transition:0.3s; }
-  .package-card.selected { border:2px solid #ffda79; background:rgba(255,218,121,0.2); transform:scale(1.05); }
-  .package-card h3 { margin:0 0 10px; font-size:16px; }
-  .package-card p { margin:0 0 10px; }
-  .payment-section { margin-top:40px; }
-  .instructions p { margin:5px 0; font-size:14px; }
-  .verify-box { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
-  input, button { padding:10px; border-radius:8px; border:none; font-size:14px; }
-  input { width:100%; }
-  button.verify-btn { background:#2ed573; color:#000; font-weight:600; cursor:pointer; transition:0.3s; }
-  button.verify-btn:hover { transform:scale(1.05); }
-  .selected-price { margin-bottom:10px; font-weight:600; font-size:16px; }
-
-  /* Loading spinner */
-  #loadingSpinner {
-    display:none;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%, -50%);
-    border:6px solid rgba(255,255,255,0.2);
-    border-top:6px solid #2ed573;
-    border-radius:50%;
-    width:60px;
-    height:60px;
-    animation: spin 1s linear infinite;
-    z-index:1000;
-  }
-
-  /* Animations */
-  @keyframes spin { 0% { transform:translate(-50%, -50%) rotate(0deg);} 100% { transform:translate(-50%, -50%) rotate(360deg);} }
-  @keyframes fadeIn { 0% { opacity:0; transform:translateY(-10px); } 100% { opacity:1; transform:translateY(0); } }
-
-  footer { text-align:center; padding:15px; background:rgba(0,0,0,0.6); margin-top:30px; font-size:14px; }
-
-  @media(max-width:600px){
-    .packages-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
-    .package-card h3{font-size:14px;}
-    .package-card p{font-size:12px;}
-  }
-</style>
-</head>
-
-<body>
-
-<header class="header">
-  <div class="nav-left">
-    <img src="logo.png" alt="BilaiTopUp Logo" class="logo">
-    <span class="brand">BilaiTopUp</span>
-  </div>
-  <button class="menu-btn" id="menuBtn">☰</button>
-  <div class="menu-box" id="menuBox">
-    <a href="account.html">আমার একাউন্ট</a>
-    <a href="faq.html">FAQ</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="terms.html">Terms & Conditions</a>
-    <a href="https://wa.me/01963178893" target="_blank" rel="noopener">💬 Support</a>
-    <button onclick="logout()" class="logout-btn">🚪 Logout</button>
-  </div>
-</header>
-
-<main class="container">
-  <!-- Packages -->
-  <section class="packages-section">
-    <h1>💎 Free Fire Diamond Packages</h1>
-    <div id="packages" class="packages-grid"></div>
-  </section>
-
-  <!-- Payment -->
-  <section class="payment-section">
-    <h2>📲 Payment Instructions</h2>
-    <div class="instructions">
-      <p>*247# ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।</p>
-      <p>"Send Money" -এ ক্লিক করুন।</p>
-      <p>প্রাপক নম্বর: <strong id="bkashNumber">01829865733</strong></p>
-      <p>টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী টাকার পরিমাণ)</p>
-      <p>নিশ্চিত করতে আপনার পিন লিখুন।</p>
-      <p>সবকিছু ঠিক থাকলে bKash থেকে একটি কনফার্মেশন বার্তা পাবেন।</p>
-      <p>এখন নিচের বক্সে Free Fire UID, Mobile Number এবং Transaction ID দিন।</p>
-      <p>এখন VERIFY & ORDER বাটনে ক্লিক করে অর্ডার সাবমিট করুন।</p>
-    </div>
-    <div class="selected-price" id="selectedPrice">Select a package</div>
-    <div class="verify-box">
-      <input type="number" id="ffUid" placeholder="Free Fire UID (সর্বোচ্চ 12 সংখ্যা)" maxlength="12">
-      <input type="number" id="mobileNumber" placeholder="Mobile Number (সর্বোচ্চ 11 সংখ্যা)" maxlength="11">
-      <input type="text" id="transactionId" placeholder="Transaction ID (সর্বোচ্চ 15 অক্ষর)" maxlength="15">
-      <button id="verifyBtn" class="verify-btn">✅ VERIFY & ORDER</button>
-    </div>
-  </section>
-</main>
-
-<div id="loadingSpinner"></div>
-
-<footer>
-  <p>© 2025 BilaiTopUp | All Rights Reserved | Developed and Owned by <strong>Tahmid</strong></p>
-</footer>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  let selectedPackage = null;
-
-  const menuBtn = document.getElementById("menuBtn");
-  const menuBox = document.getElementById("menuBox");
-  const spinner = document.getElementById("loadingSpinner");
-
-  // Toggle menu
-  menuBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    menuBox.style.display = menuBox.style.display === "block" ? "none" : "block";
-  });
-
-  // Close menu when clicking outside
-  document.addEventListener("click", e => {
-    if (!menuBox.contains(e.target) && e.target !== menuBtn) {
-      menuBox.style.display = "none";
-    }
-  });
-
-  // Auto-close menu when link clicked
-  menuBox.querySelectorAll("a, button").forEach(el => {
-    el.addEventListener("click", () => {
-      menuBox.style.display = "none";
-    });
-  });
-
-  // Check login
-  auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = "login.html";
-    else loadPackages();
-  });
-
-  async function loadPackages() {
-    const div = document.getElementById("packages");
-    div.innerHTML = "";
-    const packages = [
-      { name: "25 Diamond", price: 24 }, { name: "50 Diamond", price: 39 },
-      { name: "115 Diamond", price: 82 }, { name: "240 Diamond", price: 159 },
-      { name: "355 Diamond", price: 235 }, { name: "480 Diamond", price: 315 },
-      { name: "610 Diamond", price: 395 }, { name: "505 Diamond", price: 349 },
-      { name: "850 Diamond", price: 550 }, { name: "1090 Diamond", price: 739 },
-      { name: "1240 Diamond", price: 787 }, { name: "2530 Diamond", price: 1592 },
-      { name: "5060 Diamond", price: 3178 }, { name: "10120 Diamond", price: 6299 },
-      { name: "12650 Diamond", price: 7872 }, { name: "Weekly", price: 160 },
-      { name: "Monthly", price: 789 }, { name: "Weekly 2x", price: 315 },
-      { name: "Weekly 3x", price: 472 }, { name: "Weekly Lite", price: 45 },
-      { name: "5x Weekly Lite", price: 215 }
-    ];
-    packages.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "package-card";
-      card.innerHTML = `<h3>${p.name}</h3><p>${p.price} TK</p>`;
-      card.addEventListener("click", () => {
-        selectedPackage = p;
-        document.querySelectorAll(".package-card").forEach(c => c.classList.remove("selected"));
-        card.classList.add("selected");
-        document.getElementById("selectedPrice").textContent = `${p.name} - ${p.price} TK`;
-      });
-      div.appendChild(card);
-    });
-  }
-
-  // Verify & Order
-  document.getElementById("verifyBtn").addEventListener("click", async () => {
-    const user = auth.currentUser;
-    const ffUid = document.getElementById("ffUid").value.trim();
-    const mobileNumber = document.getElementById("mobileNumber").value.trim();
-    const transactionId = document.getElementById("transactionId").value.trim();
-
-    if (!user) return alert("প্রথমে লগইন করুন!");
-    if (!selectedPackage) return alert("একটি প্যাকেজ নির্বাচন করুন!");
-    if (!ffUid || !mobileNumber || !transactionId) return alert("সব ফিল্ড পূরণ করুন!");
-    if (isNaN(ffUid) || isNaN(mobileNumber)) return alert("Free Fire UID এবং Mobile Number অবশ্যই সংখ্যা হতে হবে!");
-    if (ffUid.length > 12) return alert("Free Fire UID সর্বোচ্চ 12 সংখ্যা হতে পারে!");
-    if (mobileNumber.length > 11) return alert("Mobile Number সর্বোচ্চ 11 সংখ্যা হতে পারে!");
-    if (transactionId.length > 15) return alert("Transaction ID সর্বোচ্চ 15 অক্ষর হতে পারে!");
-    if (selectedPackage.price < 5 || selectedPackage.price > 10000) return alert("Deposit amount must be between 5 TK and 10,000 TK");
-
-    try {
-      // Show loading spinner
-      spinner.style.display = "block";
-
-      await db.collection("orders").add({
-        uid: user.uid,
-        ffUid: Number(ffUid),
-        mobileNumber: Number(mobileNumber),
-        packageName: selectedPackage.name,
-        price: selectedPackage.price,
-        transactionId,
-        status: "Pending",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      alert("✅ অর্ডার সাবমিট হয়েছে! Status: Pending");
-
-      // Clear fields
-      document.getElementById("ffUid").value = "";
-      document.getElementById("mobileNumber").value = "";
-      document.getElementById("transactionId").value = "";
-      document.getElementById("selectedPrice").textContent = "Select a package";
-      selectedPackage = null;
-      document.querySelectorAll(".package-card").forEach(c => c.classList.remove("selected"));
-    } catch (err) {
-      console.error("Order failed:", err);
-      alert("অর্ডার সাবমিট করতে ব্যর্থ!");
-    } finally {
-      // Hide spinner
-      spinner.style.display = "none";
-    }
-  });
-
-  window.logout = () => {
-    auth.signOut().then(() => window.location.href = "login.html")
-      .catch(err => console.error("Logout failed:", err));
-  };
-});
-</script>
-
-</body>
-</html>
+  
+<!-- Google Fonts -->  
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">  
+  
+<!-- Firebase -->  
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>  
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>  
+<script src="firebase-config.js"></script>  
+  
+<style>  
+  body { font-family: 'Poppins', sans-serif; margin:0; background:#1f1c2c; color:#fff; }  
+  header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:rgba(0,0,0,0.6); position:relative; }  
+  header .logo { height:40px; }  
+  header .brand { font-weight:600; margin-left:10px; }  
+  .menu-btn { background:none; border:none; font-size:26px; color:#fff; cursor:pointer; }  
+  .menu-box { display:none; position:absolute; top:60px; right:20px; background:#2c2c54; border-radius:10px; padding:10px; box-shadow:0 5px 15px rgba(0,0,0,0.4); z-index:999; }  
+  .menu-box a, .menu-box button { display:block; width:100%; padding:10px; text-align:left; border:none; background:none; color:#fff; font-weight:600; text-decoration:none; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.1); }  
+  .menu-box a:hover, .menu-box button:hover { background:rgba(255,255,255,0.1); }  
+  .menu-box button.logout-btn { color:#ff4d4d; font-weight:700; }  
+  main { max-width:800px; margin:20px auto; padding:0 15px; }  
+  .packages-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:15px; margin-top:20px; }  
+  .package-card { background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:center; cursor:pointer; transition:0.3s; }  
+  .package-card.selected { border:2px solid #ffda79; background:rgba(255,218,121,0.2); }  
+  .package-card h3 { margin:0 0 10px; font-size:16px; }  
+  .package-card p { margin:0 0 10px; }  
+  .payment-section { margin-top:40px; }  
+  .instructions p { margin:5px 0; font-size:14px; }  
+  .verify-box { display:flex; flex-direction:column; gap:10px; margin-top:10px; }  
+  input, button { padding:10px; border-radius:8px; border:none; font-size:14px; }  
+  input { width:100%; }  
+  button.verify-btn { background:#2ed573; color:#000; font-weight:600; cursor:pointer; }  
+  .selected-price { margin-bottom:10px; font-weight:600; font-size:16px; }  
+  footer { text-align:center; padding:15px; background:rgba(0,0,0,0.6); margin-top:30px; font-size:14px; }  
+</style>  
+</head>  
+  
+<body>  
+  
+<header class="header">  
+  <div class="nav-left">  
+    <img src="logo.png" alt="BilaiTopUp Logo" class="logo">  
+    <span class="brand">BilaiTopUp</span>  
+  </div>  
+  <button class="menu-btn" id="menuBtn">☰</button>  
+  <div class="menu-box" id="menuBox">  
+    <a href="account.html">আমার একাউন্ট</a>  
+    <a href="faq.html">FAQ</a>  
+    <a href="privacy.html">Privacy Policy</a>  
+    <a href="terms.html">Terms & Conditions</a>  
+    <a href="https://wa.me/01963178893" target="_blank" rel="noopener">💬 Support</a>  
+    <button onclick="logout()" class="logout-btn">🚪 Logout</button>  
+  </div>  
+</header>  
+  
+<main class="container">  
+  <!-- Packages -->  
+  <section class="packages-section">  
+    <h1>💎 Free Fire Diamond Packages</h1>  
+    <div id="packages" class="packages-grid"></div>  
+  </section>  
+  
+  <!-- Payment -->  
+  <section class="payment-section">  
+    <h2>📲 Payment Instructions</h2>  
+    <div class="instructions">  
+      <p>*247# ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।</p>  
+      <p>"Send Money" -এ ক্লিক করুন।</p>  
+      <p>প্রাপক নম্বর: <strong id="bkashNumber">01829865733</strong></p>  
+      <p>টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী টাকার পরিমাণ)</p>  
+      <p>নিশ্চিত করতে আপনার পিন লিখুন।</p>  
+      <p>সবকিছু ঠিক থাকলে bKash থেকে একটি কনফার্মেশন বার্তা পাবেন।</p>  
+      <p>এখন নিচের বক্সে Free Fire UID, Mobile Number এবং Transaction ID দিন।</p>  
+      <p>এখন VERIFY & ORDER বাটনে ক্লিক করে অর্ডার সাবমিট করুন, কিছুক্ষণের মধ্যেই আপনার অর্ডার কমপ্লিট হয়ে যাবে।</p>  
+    </div>  
+    <div class="selected-price" id="selectedPrice">Select a package</div>  
+    <div class="verify-box">  
+      <input type="number" id="ffUid" placeholder="Free Fire UID (শুধুমাত্র সংখ্যা)">  
+      <input type="number" id="mobileNumber" placeholder="Mobile Number (শুধুমাত্র সংখ্যা)">  
+      <input type="text" id="transactionId" placeholder="Transaction ID লিখুন">  
+      <button id="verifyBtn" class="verify-btn">✅ VERIFY & ORDER</button>  
+    </div>  
+  </section>  
+</main>  
+  
+<footer>  
+  <p>© 2025 BilaiTopUp | All Rights Reserved | Developed and Owned by <strong>Tahmid</strong></p>  
+</footer>  
+  
+<script>  
+document.addEventListener("DOMContentLoaded", () => {  
+  const auth = firebase.auth();  
+  const db = firebase.firestore();  
+  let selectedPackage = null;  
+  
+  const menuBtn = document.getElementById("menuBtn");  
+  const menuBox = document.getElementById("menuBox");  
+  
+  // Toggle menu  
+  menuBtn.addEventListener("click", (e) => {  
+    e.stopPropagation();  
+    menuBox.style.display = menuBox.style.display === "block" ? "none" : "block";  
+  });  
+  
+  // Close when clicking outside  
+  document.addEventListener("click", (e) => {  
+    if (!menuBox.contains(e.target) && e.target !== menuBtn) {  
+      menuBox.style.display = "none";  
+    }  
+  });  
+  
+  // Auto-close when link clicked  
+  menuBox.querySelectorAll("a, button").forEach(el => {  
+    el.addEventListener("click", () => {  
+      menuBox.style.display = "none";  
+    });  
+  });  
+  
+  // Check login  
+  auth.onAuthStateChanged(user => {  
+    if (!user) window.location.href = "login.html";  
+    else loadPackages();  
+  });  
+  
+  async function loadPackages() {  
+    const div = document.getElementById("packages");  
+    div.innerHTML = "";  
+    const packages = [  
+      { name: "25 Diamond", price: 24 }, { name: "50 Diamond", price: 39 },  
+      { name: "115 Diamond", price: 82 }, { name: "240 Diamond", price: 159 },  
+      { name: "355 Diamond", price: 235 }, { name: "480 Diamond", price: 315 },  
+      { name: "610 Diamond", price: 395 }, { name: "505 Diamond", price: 349 },  
+      { name: "850 Diamond", price: 550 }, { name: "1090 Diamond", price: 739 },  
+      { name: "1240 Diamond", price: 787 }, { name: "2530 Diamond", price: 1592 },  
+      { name: "5060 Diamond", price: 3178 }, { name: "10120 Diamond", price: 6299 },  
+      { name: "12650 Diamond", price: 7872 }, { name: "Weekly", price: 160 },  
+      { name: "Monthly", price: 789 }, { name: "Weekly 2x", price: 315 },  
+      { name: "Weekly 3x", price: 472 }, { name: "Weekly Lite", price: 45 },  
+      { name: "5x Weekly Lite", price: 215 }  
+    ];  
+    packages.forEach(p => {  
+      const card = document.createElement("div");  
+      card.className = "package-card";  
+      card.innerHTML = `<h3>${p.name}</h3><p>${p.price} TK</p>`;  
+      card.addEventListener("click", () => {  
+        selectedPackage = p;  
+        document.querySelectorAll(".package-card").forEach(c => c.classList.remove("selected"));  
+        card.classList.add("selected");  
+        document.getElementById("selectedPrice").textContent = `${p.name} - ${p.price} TK`;  
+      });  
+      div.appendChild(card);  
+    });  
+  }  
+  
+  // Verify & order  
+  document.getElementById("verifyBtn").addEventListener("click", async () => {  
+    const user = auth.currentUser;  
+    const ffUid = document.getElementById("ffUid").value.trim();  
+    const mobileNumber = document.getElementById("mobileNumber").value.trim();  
+    const transactionId = document.getElementById("transactionId").value.trim();  
+  
+    if (!user) return alert("প্রথমে লগইন করুন!");  
+    if (!selectedPackage) return alert("একটি প্যাকেজ নির্বাচন করুন!");  
+    if (!ffUid || !mobileNumber || !transactionId) return alert("সব ফিল্ড পূরণ করুন!");  
+    if (isNaN(ffUid) || isNaN(mobileNumber)) return alert("Free Fire UID এবং Mobile Number অবশ্যই সংখ্যা হতে হবে!");  
+  
+    try {  
+      await db.collection("orders").add({  
+        uid: user.uid,  
+        ffUid: Number(ffUid),  
+        mobileNumber: Number(mobileNumber),  
+        packageName: selectedPackage.name,  
+        price: selectedPackage.price,  
+        transactionId,  
+        status: "Pending",  
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()  
+      });  
+      alert("✅ অর্ডার সাবমিট হয়েছে! Status: Pending");  
+      document.getElementById("ffUid").value = "";  
+      document.getElementById("mobileNumber").value = "";  
+      document.getElementById("transactionId").value = "";  
+      document.getElementById("selectedPrice").textContent = "Select a package";  
+      selectedPackage = null;  
+      document.querySelectorAll(".package-card").forEach(c => c.classList.remove("selected"));  
+    } catch (err) {  
+      console.error("Order failed:", err);  
+      alert("অর্ডার সাবমিট করতে ব্যর্থ!");  
+    }  
+  });  
+  
+  window.logout = () => {  
+    auth.signOut().then(() => window.location.href = "login.html")  
+      .catch(err => console.error("Logout failed:", err));  
+  };  
+});  
+</script>  
+  
+</body>  
+  </html>
