@@ -22,35 +22,227 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   
-<style>  
-  body { font-family: 'Poppins', sans-serif; margin:0; background:#1f1c2c; color:#fff; }  
-  header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:rgba(0,0,0,0.6); position:relative; }  
-  header .logo { height:40px; }  
-  header .brand { font-weight:600; margin-left:10px; }  
-  .menu-btn { background:none; border:none; font-size:26px; color:#fff; cursor:pointer; }  
-  .menu-box { display:none; position:absolute; top:60px; right:20px; background:#2c2c54; border-radius:10px; padding:10px; box-shadow:0 5px 15px rgba(0,0,0,0.4); z-index:999; }  
-  .menu-box a, .menu-box button { display:block; width:100%; padding:10px; text-align:left; border:none; background:none; color:#fff; font-weight:600; text-decoration:none; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.1); }  
-  .menu-box a:hover, .menu-box button:hover { background:rgba(255,255,255,0.1); }  
-  .menu-box button.logout-btn { color:#ff4d4d; font-weight:700; }  
-  main { max-width:800px; margin:20px auto; padding:0 15px; }  
-  .packages-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:15px; margin-top:20px; }  
-  .package-card { background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:center; cursor:pointer; transition:0.3s; }  
-  .package-card.selected { border:2px solid #ffda79; background:rgba(255,218,121,0.2); }  
-  .package-card h3 { margin:0 0 10px; font-size:16px; }  
-  .package-card p { margin:0 0 10px; }  
-  .payment-section { margin-top:40px; }  
-  .instructions p { margin:5px 0; font-size:14px; }  
-  .verify-box { display:flex; flex-direction:column; gap:10px; margin-top:10px; }  
-  input, button { padding:10px; border-radius:8px; border:none; font-size:14px; }  
-  input { width:100%; }  
-  button.verify-btn { background:#2ed573; color:#000; font-weight:600; cursor:pointer; }  
-  .selected-price { margin-bottom:10px; font-weight:600; font-size:16px; }  
-  footer { text-align:center; padding:15px; background:rgba(0,0,0,0.6); margin-top:30px; font-size:14px; }  
-</style>  
+<style>
+  /* ---------- Base ---------- */
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: #1f1c2c;
+    color: #fff;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(0,0,0,0.6);
+    position: relative;
+  }
+
+  header .logo {
+    height: 40px;
+  }
+
+  header .brand {
+    font-weight: 600;
+    margin-left: 10px;
+    font-size: 20px;
+  }
+
+  .menu-btn {
+    background: none;
+    border: none;
+    font-size: 26px;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .menu-btn:hover {
+    transform: rotate(90deg);
+  }
+
+  .menu-box {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: #2c2c54;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    z-index: 999;
+    transform: scale(0);
+    transform-origin: top right;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .menu-box.show {
+    display: block;
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .menu-box a, .menu-box button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    border: none;
+    background: none;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: background 0.2s ease;
+  }
+
+  .menu-box a:hover, .menu-box button:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  .menu-box button.logout-btn {
+    color: #ff4d4d;
+    font-weight: 700;
+  }
+
+  main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 15px;
+  }
+
+  /* ---------- Packages ---------- */
+  .packages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .package-card {
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  .package-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+  }
+
+  .package-card.selected {
+    border: 2px solid #ffda79;
+    background: rgba(255,218,121,0.2);
+  }
+
+  .package-card h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+  }
+
+  .package-card p {
+    margin: 0 0 10px;
+  }
+
+  /* ---------- Payment ---------- */
+  .payment-section {
+    margin-top: 40px;
+  }
+
+  .instructions p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+
+  .selected-price {
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .verify-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  input, button {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+  }
+
+  input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+  }
+
+  input::placeholder {
+    color: rgba(255,255,255,0.6);
+  }
+
+  button.verify-btn {
+    background: #2ed573;
+    color: #000;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  button.verify-btn:hover {
+    background: #26c55d;
+  }
+
+  footer {
+    text-align: center;
+    padding: 15px;
+    background: rgba(0,0,0,0.6);
+    margin-top: 30px;
+    font-size: 14px;
+  }
+
+  /* ---------- Loader ---------- */
+  #loader {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+  }
+
+  .spinner {
+    border: 6px solid rgba(255,255,255,0.2);
+    border-top: 6px solid #2ed573;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
+  }
+</style>
 </head>  
   
 <body>  
   
+<div id="loader">
+  <div class="spinner"></div>
+</div>
 <header class="header">  
   <div class="nav-left">  
     <img src="logo.png" alt="BilaiTopUp Logo" class="logo">  
