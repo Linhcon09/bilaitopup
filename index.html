@@ -254,7 +254,7 @@
     <a href="faq.html">FAQ</a>  
     <a href="privacy.html">Privacy Policy</a>  
     <a href="terms.html">Terms & Conditions</a>  
-    <a href="https://wa.me/01963178893" target="_blank" rel="noopener">💬 Support</a>  
+    <a href="https://wa.me/8801963178893" target="_blank" rel="noopener">💬 Support</a>  
     <button onclick="logout()" class="logout-btn">🚪 Logout</button>  
   </div>  
 </header>  
@@ -407,8 +407,8 @@ document.getElementById("verifyBtn").addEventListener("click", async () => {
     try {
       await db.collection("orders").add({
         uid: user.uid,
-        ffUid: Number(ffUid),
-        mobileNumber: Number(mobileNumber),
+        ffUid: ffUid,
+        mobileNumber: mobileNumber,
         packageName: selectedPackage.name,
         price: selectedPackage.price,
         transactionId,
@@ -425,8 +425,8 @@ document.getElementById("verifyBtn").addEventListener("click", async () => {
   try {
     await db.collection("orders").add({
       uid: user.uid,
-      ffUid: Number(ffUid),
-      mobileNumber: Number(mobileNumber),
+      ffUid: ffUid,
+      mobileNumber: mobileNumber,
       packageName: selectedPackage.name,
       price: selectedPackage.price,
       transactionId,
