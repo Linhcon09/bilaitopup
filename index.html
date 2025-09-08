@@ -50,22 +50,21 @@
       position: relative;
     }
 
-    .nav-left {
-      display:flex;
-      align-items:center;
-    }
+    .nav-left { display:flex; align-items:center; }
+    header .logo { height: 40px; width: auto; display:block; }
+    header .brand { font-weight: 600; margin-left: 10px; font-size: 20px; }
 
-    header .logo {
-      height: 40px;
-      width: auto;
-      display:block;
-    }
-
-    header .brand {
+    .wallet-box {
+      background: var(--panel);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
       font-weight: 600;
-      margin-left: 10px;
-      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+    .wallet-box span { color: var(--accent); font-weight: 700; }
 
     .menu-btn {
       background: none;
@@ -118,21 +117,9 @@
       transition: background 0.12s ease;
       font-size: 14px;
     }
+    .menu-box button.logout-btn { color: #ff6b6b; font-weight: 700; }
 
-    .menu-box a:last-child, .menu-box button:last-child { border-bottom: none; }
-
-    .menu-box a:hover, .menu-box button:hover { background: rgba(255,255,255,0.04); }
-
-    .menu-box button.logout-btn {
-      color: #ff6b6b;
-      font-weight: 700;
-    }
-
-    main {
-      max-width: 980px;
-      margin: 20px auto;
-      padding: 0 15px;
-    }
+    main { max-width: 980px; margin: 20px auto; padding: 0 15px; }
 
     /* ---------- Packages ---------- */
     .packages-grid {
@@ -141,7 +128,6 @@
       gap: 15px;
       margin-top: 20px;
     }
-
     .package-card {
       background: rgba(255,255,255,0.04);
       padding: 14px;
@@ -152,55 +138,10 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.35);
       user-select:none;
     }
-
     .package-card:hover { transform: translateY(-6px); box-shadow: 0 10px 22px rgba(0,0,0,0.5); }
     .package-card.selected {
       border: 2px solid var(--accent);
       background: rgba(255,218,121,0.06);
-    }
-
-    .package-card h3 { margin: 0 0 8px; font-size: 15px; }
-    .package-card p { margin: 0; font-size: 14px; opacity: 0.95; }
-
-    /* ---------- Payment ---------- */
-    .payment-section { margin-top: 34px; }
-    .instructions p { margin: 6px 0; font-size: 14px; line-height:1.4; color: rgba(255,255,255,0.92); }
-    .selected-price { margin-bottom: 12px; font-weight: 600; font-size: 16px; }
-
-    .verify-box { display:flex; flex-direction:column; gap:10px; margin-top: 10px; }
-
-    input, button {
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 14px;
-      outline: none;
-    }
-
-    input {
-      width:100%;
-      background: rgba(255,255,255,0.04);
-      color: #fff;
-    }
-
-    input::placeholder { color: rgba(255,255,255,0.55); }
-
-    button.verify-btn {
-      background: var(--green);
-      color: #000;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.18s ease;
-    }
-
-    button.verify-btn:hover { filter:brightness(0.95); }
-
-    footer {
-      text-align: center;
-      padding: 15px;
-      background: rgba(0,0,0,0.6);
-      margin-top: 30px;
-      font-size: 14px;
     }
 
     /* ---------- Loader ---------- */
@@ -208,10 +149,8 @@
     .spinner { border:6px solid rgba(255,255,255,0.12); border-top:6px solid var(--green); border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; }
     @keyframes spin { 0%{ transform:rotate(0deg);} 100%{ transform:rotate(360deg);} }
 
-    /* responsive tweaks */
     @media (max-width:520px) {
       .menu-box { right: 10px; left: 10px; top: 56px; transform-origin: top center; }
-      .packages-grid { grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); }
     }
   </style>
 </head>
@@ -225,7 +164,10 @@
       <span class="brand">BilaiTopUp</span>
     </div>
 
-    <!-- accessible menu button -->
+    <div class="wallet-box">
+      💰 Wallet: <span id="walletBalance">0</span> ৳
+    </div>
+
     <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-controls="menuBox">☰</button>
 
     <nav class="menu-box" id="menuBox" role="menu" aria-hidden="true">
@@ -239,42 +181,37 @@
   </header>
 
   <main class="container">
-    <!-- Packages -->
     <section class="packages-section">
       <h1>💎 Free Fire Diamond Packages</h1>
       <div id="packages" class="packages-grid" aria-live="polite"></div>
     </section>
 
-    <!-- Payment -->
     <section class="payment-section">
       <h2>📲 Payment Instructions</h2>
       <div class="instructions">
-        <p>*247# ডায়াল করে আপনার bKash মোবাইল মেনুতে যান অথবা bKash অ্যাপে যান।</p>
-        <p>"Send Money" -এ ক্লিক করুন।</p>
-        <p>প্রাপক নম্বর: <strong id="bkashNumber">01829865733</strong></p>
-        <p>টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী টাকার পরিমাণ)</p>
-        <p>নিশ্চিত করতে আপনার পিন লিখুন।</p>
-        <p>সবকিছু ঠিক থাকলে bKash থেকে একটি কনফার্মেশন বার্তা পাবেন।</p>
-        <p>এখন নিচের বক্সে Free Fire UID, Mobile Number এবং Transaction ID দিন।</p>
-        <p>এখন VERIFY & ORDER বাটনে ক্লিক করে অর্ডার সাবমিট করুন, কিছুক্ষণের মধ্যেই আপনার অর্ডার কমপ্লিট হয়ে যাবে।</p>
+        <p><strong>ONLY BKASH</strong></p>
+        <p>bKash এ গিয়ে Send Money তে ক্লিক করে নিচের প্রাপক নম্বর দিন</p>
+        <p>Bkash প্রাপক নম্বর: <strong id="bkashNumber">01829865733</strong></p>
+        <p>টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী)</p>
+        <p>Free Fire UID, Mobile Number এবং Transaction ID দিন।</p>
+        <p>এখন VERIFY & ORDER বাটনে ক্লিক করে অর্ডার সাবমিট করুন।</p>
       </div>
 
       <div class="selected-price" id="selectedPrice">Select a package</div>
 
       <div class="verify-box">
-        <input type="text" id="ffUid" inputmode="numeric" pattern="\d*" placeholder="Free Fire UID (শুধুমাত্র সংখ্যা)" aria-label="Free Fire UID">
-        <input type="text" id="mobileNumber" inputmode="tel" pattern="\d*" placeholder="Mobile Number (শুধুমাত্র সংখ্যা)" aria-label="Mobile Number">
-        <input type="text" id="transactionId" placeholder="Transaction ID লিখুন" aria-label="Transaction ID">
+        <input type="text" id="ffUid" inputmode="numeric" placeholder="Free Fire UID">
+        <input type="text" id="mobileNumber" inputmode="tel" placeholder="Mobile Number">
+        <input type="text" id="transactionId" placeholder="Transaction ID">
         <button id="verifyBtn" class="verify-btn">✅ VERIFY & ORDER</button>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>© 2025 BilaiTopUp | All Rights Reserved | Developed and Owned by <strong>Tahmid</strong></p>
+    <p>© 2025 BilaiTopUp | All Rights Reserved | Developed by <strong>Tahmid</strong></p>
   </footer>
 
-  <!-- External js connection -->
   <script src="script.js"></script>
 </body>
   </html>
