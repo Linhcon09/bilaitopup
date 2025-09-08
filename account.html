@@ -32,7 +32,7 @@ main { max-width:1000px; margin:20px auto; padding:0 15px; }
 .profile img { width:60px; height:60px; border-radius:50%; border:2px solid #fff; }
 .wallet-card, .deposit-section { background: rgba(255,255,255,0.12); padding:20px; border-radius:15px; margin-bottom:30px; text-align:center; backdrop-filter: blur(8px); }
 .wallet-card h1 { font-size:22px; margin-bottom:10px; }
-.wallet-card p { font-size:20px; }
+.wallet-card p { font-size:18px; margin:5px 0; }
 .deposit-section input, .deposit-section button { padding:10px; margin:8px 5px; border-radius:8px; border:none; font-size:15px; }
 .deposit-section button { background:#2ed573; color:#000; font-weight:600; cursor:pointer; transition:0.3s; }
 .deposit-section button:hover { transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,0.2); }
@@ -74,12 +74,22 @@ table th { background: rgba(255,255,255,0.2); }
     <div class="profile-info">
       <h2 id="profileName"></h2>
       <p id="profileEmail"></p>
+      <p><strong>UID:</strong> <span id="profileUid"></span></p>
     </div>
   </div>
 
   <div class="wallet-card">
     <h1>আমার ওয়ালেট</h1>
     <p>ব্যালান্স: <span id="walletBalance">0</span> TK</p>
+  </div>
+
+  <!-- 📊 Stats -->
+  <div class="wallet-card">
+    <h1>📊 আমার পরিসংখ্যান</h1>
+    <p>মোট অর্ডার: <span id="totalOrders">0</span></p>
+    <p>মোট ডিপোজিট: <span id="totalDeposits">0</span></p>
+    <p>মোট খরচ: <span id="totalSpend">0</span> TK</p>
+    <p>গত ৭ দিনে খরচ: <span id="weeklySpend">0</span> TK</p>
   </div>
 
   <div class="deposit-section">
@@ -134,9 +144,11 @@ auth.onAuthStateChanged(user => {
     document.getElementById("profilePic").src = user.photoURL || "https://via.placeholder.com/60";
     document.getElementById("profileName").innerText = user.displayName || "Unknown";
     document.getElementById("profileEmail").innerText = user.email || "Unknown";
+    document.getElementById("profileUid").innerText = user.uid;
     loadWallet(user.uid);
     loadDepositHistory(user.uid);
     loadOrders(user.uid);
+    loadStats(user.uid);
   }
 });
 
@@ -170,6 +182,7 @@ document.getElementById("submitDepositBtn").addEventListener("click", async ()=>
   document.getElementById("depositAmount").value="";
   document.getElementById("depositTid").value="";
   loadDepositHistory(user.uid);
+  loadStats(user.uid);
 });
 
 // ---------------- Load deposit history ----------------
@@ -182,24 +195,19 @@ async function loadDepositHistory(uid){
       .where("uid", "==", uid)
       .orderBy("createdAt", "desc")
       .get();
-    if(snapshot.empty) {
-      noMsg.style.display = "block";
-      return;
-    }
-    noMsg.style.display = "none";
+    if(snapshot.empty) { noMsg.style.display="block"; return; }
+    noMsg.style.display="none";
     snapshot.forEach(doc => {
       const d = doc.data();
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${d.amount || "-"}</td>
-        <td><span class="status ${d.status.toLowerCase()}">${d.status}</span></td>
-        <td>${d.createdAt?.toDate().toLocaleString() || "-"}</td>
+        <td><span class="status ${d.status?.toLowerCase() || ''}">${d.status || "-"}</span></td>
+        <td>${d.createdAt ? d.createdAt.toDate().toLocaleString() : "-"}</td>
       `;
       table.appendChild(tr);
     });
-  } catch(e) {
-    console.error(e);
-  }
+  } catch(e) { console.error(e); }
 }
 
 // ---------------- Load orders ----------------
@@ -212,11 +220,8 @@ async function loadOrders(uid){
       .where("uid", "==", uid)
       .orderBy("createdAt", "desc")
       .get();
-    if(snapshot.empty) {
-      noMsg.style.display = "block";
-      return;
-    }
-    noMsg.style.display = "none";
+    if(snapshot.empty) { noMsg.style.display="block"; return; }
+    noMsg.style.display="none";
     snapshot.forEach(doc => {
       const d = doc.data();
       const tr = document.createElement("tr");
@@ -224,14 +229,40 @@ async function loadOrders(uid){
         <td>${d.packageName || "-"}</td>
         <td>${d.price || "-"}</td>
         <td>${d.transactionId || "-"}</td>
-        <td><span class="status ${d.status.toLowerCase()}">${d.status}</span></td>
-        <td>${d.createdAt?.toDate().toLocaleString() || "-"}</td>
+        <td><span class="status ${d.status?.toLowerCase() || ''}">${d.status || "-"}</span></td>
+        <td>${d.createdAt ? d.createdAt.toDate().toLocaleString() : "-"}</td>
       `;
       table.appendChild(tr);
     });
-  } catch(e) {
-    console.error(e);
-  }
+  } catch(e) { console.error(e); }
+}
+
+// ---------------- Load Stats ----------------
+async function loadStats(uid){
+  let totalOrders=0, totalDeposits=0, totalSpend=0, weeklySpend=0;
+  const now = new Date();
+  const weekAgo = new Date(now);
+  weekAgo.setDate(now.getDate() - 7);
+
+  // Orders
+  const ordersSnap = await db.collection("orders").where("uid","==",uid).get();
+  ordersSnap.forEach(doc=>{
+    const d = doc.data();
+    totalOrders++;
+    if(d.price) totalSpend += Number(d.price);
+    if(d.createdAt && d.createdAt.toDate() >= weekAgo){
+      if(d.price) weeklySpend += Number(d.price);
+    }
+  });
+
+  // Deposits
+  const depositsSnap = await db.collection("deposits").where("uid","==",uid).get();
+  depositsSnap.forEach(()=> totalDeposits++);
+
+  document.getElementById("totalOrders").innerText = totalOrders;
+  document.getElementById("totalDeposits").innerText = totalDeposits;
+  document.getElementById("totalSpend").innerText = totalSpend;
+  document.getElementById("weeklySpend").innerText = weeklySpend;
 }
 
 // ---------------- Search/filter orders ----------------
