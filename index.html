@@ -5,160 +5,94 @@
   <title>BilaiTopUp: Free Fire Diamond Top Up Bangladesh | bKash Payment | UID Top Up</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- SEO Meta Tags -->
+  <!-- SEO -->
   <meta name="description" content="BilaiTopUp - বাংলাদেশের বিশ্বস্ত Free Fire Diamond Top Up ওয়েবসাইট। এখানে সহজে bKash দিয়ে ডায়মন্ড কিনুন। নিরাপদ, দ্রুত ও সাশ্রয়ী মূল্যে ডায়মন্ড পাওয়া যাবে।">
-  <meta name="keywords" content="Free Fire Diamond Top Up, Free Fire BD Top Up, BilaiTopUp, Diamond Buy Bangladesh, bKash Free Fire Topup, Garena Free Fire Diamond, ফ্রি ফায়ার টপআপ, বাংলাদেশ ডায়মন্ড টপআপ, bkash দিয়ে ডায়মন্ড কিনুন, Uid Top Up, Website, ইউআইডি টপ আপ, bilai">
+  <meta name="keywords" content="Free Fire Diamond Top Up, Free Fire BD Top Up, BilaiTopUp, Diamond Buy Bangladesh, bKash Free Fire Topup, Garena Free Fire Diamond, ফ্রি ফায়ার টপআপ, বাংলাদেশ ডায়মন্ড টপআপ, bkash দিয়ে ডায়মন্ড কিনুন, Uid Top Up, bilai">
   <meta name="author" content="Tahmid">
   <meta property="og:title" content="BilaiTopUp - Free Fire Diamond Top Up Bangladesh">
   <meta property="og:description" content="বাংলাদেশে নিরাপদে bKash দিয়ে Free Fire Diamond কিনুন। BilaiTopUp দিচ্ছে দ্রুত ডেলিভারি ও কম দামে টপআপ।">
   <meta property="og:image" content="logo.png">
   <meta property="og:url" content="https://tahmid1dev.github.io/bilaitopup/">
 
-  <!-- Google Fonts -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- Firebase (compat) -->
+  <!-- Firebase compat -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* ---------- Base ---------- */
     :root {
       --bg: #1f1c2c;
       --panel: #2c2c54;
       --accent: #ffda79;
       --green: #2ed573;
     }
-
-    * { box-sizing: border-box; }
+    *{box-sizing:border-box;}
     body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      background: var(--bg);
-      color: #fff;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      margin:0; font-family:'Poppins',sans-serif;
+      background:var(--bg); color:#fff;
     }
-
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 18px;
-      background: rgba(0,0,0,0.6);
-      position: relative;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:12px 18px; background:rgba(0,0,0,0.6); position:relative;
     }
-
-    .nav-left { display:flex; align-items:center; }
-    header .logo { height: 40px; width: auto; display:block; }
-    header .brand { font-weight: 600; margin-left: 10px; font-size: 20px; }
-
+    .nav-left {display:flex;align-items:center;}
+    .logo {height:40px;}
+    .brand {font-weight:600;font-size:20px;margin-left:8px;}
     .wallet-box {
-      background: var(--panel);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      background:var(--panel); padding:6px 12px; border-radius:8px;
+      font-weight:600; font-size:14px; display:flex; align-items:center; gap:6px;
     }
-    .wallet-box span { color: var(--accent); font-weight: 700; }
-
+    .wallet-box span{color:var(--accent);}
     .menu-btn {
-      background: none;
-      border: none;
-      font-size: 26px;
-      color: #fff;
-      cursor: pointer;
-      transition: transform 0.25s ease;
-      line-height: 1;
-      padding: 6px;
+      background:none;border:none;font-size:26px;color:#fff;cursor:pointer;
+      transition:.25s; padding:6px;
     }
-
-    .menu-btn[aria-expanded="true"] { transform: rotate(90deg); }
-
+    .menu-btn[aria-expanded="true"]{transform:rotate(90deg);}
     .menu-box {
-      display: none;
-      position: absolute;
-      top: 60px;
-      right: 20px;
-      background: var(--panel);
-      border-radius: 10px;
-      padding: 6px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-      z-index: 999;
-      transform: scale(0);
-      transform-origin: top right;
-      transition: transform 0.18s ease, opacity 0.18s ease;
-      opacity: 0;
-      min-width: 200px;
+      display:none;position:absolute;top:60px;right:20px;background:var(--panel);
+      border-radius:10px;padding:6px;box-shadow:0 5px 15px rgba(0,0,0,0.4);
+      z-index:999;min-width:200px;opacity:0;transform:scale(0);
+      transform-origin:top right;transition:.2s;
     }
-
-    .menu-box.show {
-      display: block;
-      transform: scale(1);
-      opacity: 1;
+    .menu-box.show {display:block;opacity:1;transform:scale(1);}
+    .menu-box a,.menu-box button{
+      display:block;width:100%;padding:10px 12px;text-align:left;
+      background:none;border:none;color:#fff;font-weight:600;
+      text-decoration:none;cursor:pointer;font-size:14px;
     }
-
-    .menu-box a, .menu-box button {
-      display: block;
-      width: 100%;
-      padding: 10px 12px;
-      text-align: left;
-      border: none;
-      background: none;
-      color: #fff;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      transition: background 0.12s ease;
-      font-size: 14px;
-    }
-    .menu-box button.logout-btn { color: #ff6b6b; font-weight: 700; }
-
-    main { max-width: 980px; margin: 20px auto; padding: 0 15px; }
-
-    /* ---------- Packages ---------- */
+    .menu-box button.logout-btn{color:#ff6b6b;font-weight:700;}
+    main{max-width:980px;margin:20px auto;padding:0 15px;}
     .packages-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
-      gap: 15px;
-      margin-top: 20px;
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+      gap:15px;margin-top:20px;
     }
     .package-card {
-      background: rgba(255,255,255,0.04);
-      padding: 14px;
-      border-radius: 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
-      user-select:none;
+      background:rgba(255,255,255,0.05);padding:14px;border-radius:10px;
+      text-align:center;cursor:pointer;transition:.2s;user-select:none;
     }
-    .package-card:hover { transform: translateY(-6px); box-shadow: 0 10px 22px rgba(0,0,0,0.5); }
-    .package-card.selected {
-      border: 2px solid var(--accent);
-      background: rgba(255,218,121,0.06);
+    .package-card:hover {transform:translateY(-6px);box-shadow:0 8px 20px rgba(0,0,0,0.5);}
+    .package-card.selected{border:2px solid var(--accent);background:rgba(255,218,121,0.08);}
+    .verify-box input {
+      width:100%;padding:10px;margin:8px 0;border-radius:6px;border:none;
     }
-
-    /* ---------- Loader ---------- */
-    #loader { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10000; }
-    .spinner { border:6px solid rgba(255,255,255,0.12); border-top:6px solid var(--green); border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; }
-    @keyframes spin { 0%{ transform:rotate(0deg);} 100%{ transform:rotate(360deg);} }
-
-    @media (max-width:520px) {
-      .menu-box { right: 10px; left: 10px; top: 56px; transform-origin: top center; }
+    .verify-btn {
+      background:var(--green);color:#fff;font-weight:600;
+      border:none;padding:12px;width:100%;border-radius:6px;cursor:pointer;
     }
+    #loader{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;}
+    .spinner{border:6px solid rgba(255,255,255,0.2);border-top:6px solid var(--green);border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;}
+    @keyframes spin{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+    footer{text-align:center;padding:20px;font-size:14px;opacity:.8;}
   </style>
 </head>
 
 <body>
   <div id="loader"><div class="spinner"></div></div>
 
-  <header class="header">
+  <header>
     <div class="nav-left">
       <img src="logo.png" alt="BilaiTopUp Logo" class="logo" onerror="this.style.display='none'">
       <span class="brand">BilaiTopUp</span>
@@ -168,40 +102,35 @@
       💰 Wallet: <span id="walletBalance">0</span> ৳
     </div>
 
-    <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-controls="menuBox">☰</button>
-
-    <nav class="menu-box" id="menuBox" role="menu" aria-hidden="true">
-      <a href="account.html" role="menuitem">আমার একাউন্ট</a>
-      <a href="faq.html" role="menuitem">FAQ</a>
-      <a href="privacy.html" role="menuitem">Privacy Policy</a>
-      <a href="terms.html" role="menuitem">Terms & Conditions</a>
-      <a href="https://wa.me/8801963178893" target="_blank" rel="noopener" role="menuitem">💬 Support</a>
-      <button onclick="logout()" class="logout-btn" role="menuitem">🚪 Logout</button>
+    <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">☰</button>
+    <nav class="menu-box" id="menuBox" aria-hidden="true">
+      <a href="account.html">আমার একাউন্ট</a>
+      <a href="faq.html">FAQ</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms & Conditions</a>
+      <a href="https://wa.me/8801963178893" target="_blank">💬 Support</a>
+      <button onclick="logout()" class="logout-btn">🚪 Logout</button>
     </nav>
   </header>
 
-  <main class="container">
-    <section class="packages-section">
+  <main>
+    <section>
       <h1>💎 Free Fire Diamond Packages</h1>
-      <div id="packages" class="packages-grid" aria-live="polite"></div>
+      <div id="packages" class="packages-grid"></div>
     </section>
 
-    <section class="payment-section">
+    <section>
       <h2>📲 Payment Instructions</h2>
-      <div class="instructions">
-        <p><strong>ONLY BKASH</strong></p>
-        <p>bKash এ গিয়ে Send Money তে ক্লিক করে নিচের প্রাপক নম্বর দিন</p>
-        <p>Bkash প্রাপক নম্বর: <strong id="bkashNumber">01829865733</strong></p>
-        <p>টাকার পরিমাণঃ (আপনার প্যাকেজ অনুযায়ী)</p>
-        <p>Free Fire UID, Mobile Number এবং Transaction ID দিন।</p>
-        <p>এখন VERIFY & ORDER বাটনে ক্লিক করে অর্ডার সাবমিট করুন।</p>
-      </div>
+      <p><b>ONLY BKASH</b></p>
+      <p>bKash Send Money → <b id="bkashNumber">01829865733</b></p>
+      <p>Amount: আপনার প্যাকেজ অনুযায়ী</p>
+      <p>Free Fire UID + Mobile Number + Transaction ID দিন।</p>
 
-      <div class="selected-price" id="selectedPrice">Select a package</div>
+      <div id="selectedPrice">Select a package</div>
 
       <div class="verify-box">
-        <input type="text" id="ffUid" inputmode="numeric" placeholder="Free Fire UID">
-        <input type="text" id="mobileNumber" inputmode="tel" placeholder="Mobile Number">
+        <input type="text" id="ffUid" placeholder="Free Fire UID">
+        <input type="text" id="mobileNumber" placeholder="Mobile Number">
         <input type="text" id="transactionId" placeholder="Transaction ID">
         <button id="verifyBtn" class="verify-btn">✅ VERIFY & ORDER</button>
       </div>
@@ -209,9 +138,5 @@
   </main>
 
   <footer>
-    <p>© 2025 BilaiTopUp | All Rights Reserved | Developed by <strong>Tahmid</strong></p>
-  </footer>
-
-  <script src="script.js"></script>
-</body>
-  </html>
+    <p>© 2025 BilaiTopUp | Developed by <b>Tahmid</b></p>
+  </footer
