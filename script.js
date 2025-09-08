@@ -84,8 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
       { name: "240 Diamond", price: 159 },
       { name: "355 Diamond", price: 235 },
       { name: "480 Diamond", price: 315 },
-      { name: "610 Diamond", price: 395 },
       { name: "505 Diamond", price: 349 },
+      { name: "610 Diamond", price: 395 },
       { name: "850 Diamond", price: 550 },
       { name: "1090 Diamond", price: 739 },
       { name: "1240 Diamond", price: 787 },
@@ -139,11 +139,15 @@ document.addEventListener("DOMContentLoaded", () => {
     db.collection("wallets").doc(uid).onSnapshot(doc => {
       if (doc.exists) {
         const balance = doc.data().balance || 0;
-        balanceEl.textContent = balance.toLocaleString("en-US") + " TK";
+        // শুধু সংখ্যা দেখাবে, index.html এ আলাদা "৳" আছে
+        balanceEl.textContent = balance;
       } else {
         db.collection("wallets").doc(uid).set({ balance: 0 });
-        balanceEl.textContent = "0 TK";
+        balanceEl.textContent = "0";
       }
+    }, err => {
+      console.error("Wallet load error:", err);
+      balanceEl.textContent = "0";
     });
   }
 
@@ -153,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("input[name='paymentMethod']").forEach(radio => {
     radio.addEventListener("change", (e) => {
       paymentMethod = e.target.value;
-      txnBox.style.display = (paymentMethod === "instant") ? "block" : "none";
+      if (txnBox) txnBox.style.display = (paymentMethod === "instant") ? "block" : "none";
     });
   });
 
@@ -164,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const user = auth.currentUser;
     const ffUid = document.getElementById("ffUid").value.trim();
     const mobileNumber = document.getElementById("mobileNumber").value.trim();
-    const transactionId = txnInput.value.trim();
+    const transactionId = txnInput ? txnInput.value.trim() : "";
 
     if (!user) return alert("প্রথমে লগইন করুন!");
     if (!selectedPackage) return alert("একটি প্যাকেজ নির্বাচন করুন!");
@@ -179,19 +183,10 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       if (paymentMethod === "wallet") {
         const walletRef = db.collection("wallets").doc(user.uid);
-        const walletSnap = await walletRef.get();
-        let balance = walletSnap.exists ? walletSnap.data().balance || 0 : 0;
-
-        if (balance < selectedPackage.price) {
-          loader.style.display = "none";
-          return alert("❌ Wallet এ পর্যাপ্ত টাকা নেই!");
-        }
-
-        // Deduct instantly (transaction safe with batch)
         await db.runTransaction(async (transaction) => {
           const snap = await transaction.get(walletRef);
           const current = snap.exists ? snap.data().balance || 0 : 0;
-          if (current < selectedPackage.price) throw "Insufficient balance";
+          if (current < selectedPackage.price) throw new Error("Insufficient balance");
           transaction.update(walletRef, { balance: current - selectedPackage.price });
         });
       }
@@ -213,13 +208,13 @@ document.addEventListener("DOMContentLoaded", () => {
       // Reset form
       document.getElementById("ffUid").value = "";
       document.getElementById("mobileNumber").value = "";
-      txnInput.value = "";
+      if (txnInput) txnInput.value = "";
       document.getElementById("selectedPrice").textContent = "Select a package";
       selectedPackage = null;
       document.querySelectorAll(".package-card").forEach(c => c.classList.remove("selected"));
     } catch (err) {
       console.error("Order failed:", err);
-      alert("অর্ডার সাবমিট করতে ব্যর্থ! পরে আবার চেষ্টা করুন।");
+      alert("❌ অর্ডার সাবমিট করতে ব্যর্থ! পরে আবার চেষ্টা করুন।");
     } finally {
       loader.style.display = "none";
     }
