@@ -16,14 +16,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
   let selectedPackage = null;
-  let paymentMethod = "instant"; // default: instant pay
+  let paymentMethod = "instant"; // default method
 
   const menuBtn = document.getElementById("menuBtn");
   const menuBox = document.getElementById("menuBox");
   const txnBox = document.getElementById("transactionIdBox");
   const txnInput = document.getElementById("transactionId");
+  const balanceEl = document.getElementById("walletBalance");
 
-  // Toggle menu
+  /** -------------------------
+   * NAV MENU HANDLING
+   * ------------------------*/
   menuBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     const willShow = !menuBox.classList.contains("show");
@@ -32,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
     menuBtn.setAttribute("aria-expanded", willShow);
   });
 
-  // Close menu on outside click
   document.addEventListener("click", (e) => {
     if (!menuBox.classList.contains("show")) return;
     if (menuBox.contains(e.target) || e.target === menuBtn) return;
@@ -41,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
     menuBtn.setAttribute("aria-expanded", "false");
   });
 
-  // ESC close
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && menuBox.classList.contains("show")) {
       menuBox.classList.remove("show");
@@ -50,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Close menu when a link clicked
   menuBox.querySelectorAll("a, button").forEach(el => {
     el.addEventListener("click", () => {
       menuBox.classList.remove("show");
@@ -59,7 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Check login
+  /** -------------------------
+   * AUTH & INIT
+   * ------------------------*/
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = "login.html";
@@ -69,7 +71,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Load diamond packages
+  /** -------------------------
+   * LOAD DIAMOND PACKAGES
+   * ------------------------*/
   function loadPackages() {
     const div = document.getElementById("packages");
     div.innerHTML = "";
@@ -128,32 +132,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Load wallet balance
+  /** -------------------------
+   * REAL-TIME WALLET BALANCE
+   * ------------------------*/
   function loadWallet(uid) {
     db.collection("wallets").doc(uid).onSnapshot(doc => {
       if (doc.exists) {
         const balance = doc.data().balance || 0;
-        document.getElementById("walletBalance").textContent = balance + " TK";
+        balanceEl.textContent = balance.toLocaleString("en-US") + " TK";
       } else {
         db.collection("wallets").doc(uid).set({ balance: 0 });
-        document.getElementById("walletBalance").textContent = "0 TK";
+        balanceEl.textContent = "0 TK";
       }
     });
   }
 
-  // Payment method selector
+  /** -------------------------
+   * PAYMENT METHOD HANDLING
+   * ------------------------*/
   document.querySelectorAll("input[name='paymentMethod']").forEach(radio => {
     radio.addEventListener("change", (e) => {
       paymentMethod = e.target.value;
-      if (paymentMethod === "instant") {
-        txnBox.style.display = "block";
-      } else {
-        txnBox.style.display = "none";
-      }
+      txnBox.style.display = (paymentMethod === "instant") ? "block" : "none";
     });
   });
 
-  // Verify & Order
+  /** -------------------------
+   * ORDER SUBMIT
+   * ------------------------*/
   document.getElementById("verifyBtn").addEventListener("click", async () => {
     const user = auth.currentUser;
     const ffUid = document.getElementById("ffUid").value.trim();
@@ -163,7 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!user) return alert("প্রথমে লগইন করুন!");
     if (!selectedPackage) return alert("একটি প্যাকেজ নির্বাচন করুন!");
     if (!ffUid || !mobileNumber) return alert("সব ফিল্ড পূরণ করুন!");
-
     if (paymentMethod === "instant" && !transactionId) {
       return alert("Instant Pay এর জন্য Transaction ID প্রয়োজন!");
     }
@@ -182,8 +187,12 @@ document.addEventListener("DOMContentLoaded", () => {
           return alert("❌ Wallet এ পর্যাপ্ত টাকা নেই!");
         }
 
-        await walletRef.update({
-          balance: balance - selectedPackage.price
+        // Deduct instantly (transaction safe with batch)
+        await db.runTransaction(async (transaction) => {
+          const snap = await transaction.get(walletRef);
+          const current = snap.exists ? snap.data().balance || 0 : 0;
+          if (current < selectedPackage.price) throw "Insufficient balance";
+          transaction.update(walletRef, { balance: current - selectedPackage.price });
         });
       }
 
@@ -201,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       alert("✅ অর্ডার সাবমিট হয়েছে! Status: Pending");
 
+      // Reset form
       document.getElementById("ffUid").value = "";
       document.getElementById("mobileNumber").value = "";
       txnInput.value = "";
@@ -215,7 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Logout
+  /** -------------------------
+   * LOGOUT
+   * ------------------------*/
   window.logout = () => {
     auth.signOut()
       .then(() => window.location.href = "login.html")
