@@ -136,13 +136,13 @@ document.addEventListener("DOMContentLoaded", () => {
    * REAL-TIME WALLET BALANCE
    * ------------------------*/
   function loadWallet(uid) {
-    db.collection("wallets").doc(uid).onSnapshot(doc => {
+    db.collection("users").doc(uid).onSnapshot(doc => {
       if (doc.exists) {
         const balance = doc.data().balance || 0;
         // শুধু সংখ্যা দেখাবে, index.html এ আলাদা "৳" আছে
         balanceEl.textContent = balance;
       } else {
-        db.collection("wallets").doc(uid).set({ balance: 0 });
+        db.collection("users").doc(uid).set({ balance: 0 });
         balanceEl.textContent = "0";
       }
     }, err => {
@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       if (paymentMethod === "wallet") {
-        const walletRef = db.collection("wallets").doc(user.uid);
+        const walletRef = db.collection("users").doc(user.uid);
         await db.runTransaction(async (transaction) => {
           const snap = await transaction.get(walletRef);
           const current = snap.exists ? snap.data().balance || 0 : 0;
